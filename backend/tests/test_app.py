@@ -90,6 +90,8 @@ class DiscussionTests(unittest.TestCase):
             self.assertEqual(key, "fake-not-persisted-secret")
             calls.append(agent["id"])
             full = f"第{len(calls)}次观点：增幅 20%。[D1:L2]"
+            if len(calls) == 5:
+                full += "\n\n## Agent 的报告小节\n\n保留正文格式。"
             await on_delta(full[:5], full[:5])
             await on_delta(full[5:], full)
             return 100, "stop"
@@ -103,10 +105,22 @@ class DiscussionTests(unittest.TestCase):
         self.assertEqual(len(s["messages"]), 5)
         self.assertEqual(s["tokens"], 500)
         self.assertEqual(s["messages"][-1]["kind"], "summary")
-        export = self.client.get(f"/api/sessions/{sid}/export").text
-        self.assertIn("L2: 100 增至 120", export)
-        self.assertIn("[D1:L2]", export)
-        self.assertNotIn("fake-not-persisted-secret", export)
+        download = self.client.get(f"/api/sessions/{sid}/export")
+        self.assertEqual(download.status_code, 200)
+        self.assertTrue(download.headers["content-type"].startswith("text/markdown"))
+        self.assertEqual(download.headers["content-disposition"], f'attachment; filename="agora-{sid[:8]}.md"')
+        dialogue, rest = download.text.split("\n## 最终报告\n", 1)
+        report, references = rest.split("\n## 参考文件\n", 1)
+        self.assertIn("## 公开对话", dialogue)
+        self.assertEqual(dialogue.count("\n### 第 1 轮\n"), 1)
+        self.assertEqual(dialogue.count("\n### 第 2 轮\n"), 1)
+        self.assertEqual(dialogue.count("\n#### 分析者\n"), 2)
+        self.assertEqual(dialogue.count("\n#### 质疑者\n"), 2)
+        self.assertIn("[D1:L2]", dialogue)
+        self.assertIn("\n### 质疑者\n", report)
+        self.assertIn("> ## Agent 的报告小节\n>\n> 保留正文格式。", report)
+        self.assertIn("    L2: 100 增至 120", references)
+        self.assertNotIn("fake-not-persisted-secret", download.text)
         self.assertNotIn("fake-not-persisted-secret", json.dumps(s))
         events = self.client.get(f"/api/sessions/{sid}/events?after={s['cursor']}").text
         self.assertNotIn('"type": "delta"', events)
@@ -220,6 +234,10 @@ class DiscussionTests(unittest.TestCase):
             received = "".join(p["text"] for p in deltas if p["type"] == "delta")
             self.assertEqual(s["messages"][0]["content"], received)
             self.assertEqual(received, "第一片段第二片段")
+            download = self.client.get(f"/api/sessions/{sid}/export")
+            self.assertIn("**研讨状态** 研讨中", download.text)
+            self.assertIn("**发言状态** 正在发言（导出时）", download.text)
+            self.assertIn("尚未生成最终报告。", download.text)
             self.client.post(f"/api/sessions/{sid}/stop")
 
     def test_independent_keys_and_public_bootstrap(self):

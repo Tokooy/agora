@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowUpRight,
@@ -302,7 +302,7 @@ function App() {
     [following, setFollowing] = useState(true),
     [streamLost, setStreamLost] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null),
-    bottomRef = useRef<HTMLDivElement>(null),
+    messagesRef = useRef<HTMLDivElement>(null),
     eventRef = useRef<EventSource | null>(null),
     sessionRef = useRef<Session | null>(null);
   const active =
@@ -371,10 +371,10 @@ function App() {
         );
       } catch {}
   }, [agents, rounds, ready]);
-  useEffect(() => {
-    if (following)
-      bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [session?.messages.map((m) => m.content).join("").length, following]);
+  useLayoutEffect(() => {
+    const list = messagesRef.current;
+    if (following && list) list.scrollTop = list.scrollHeight;
+  }, [session?.messages, following, view, tab, filter]);
   useEffect(() => {
     if (preview && highlight)
       setTimeout(
@@ -1201,10 +1201,11 @@ function App() {
                       <a
                         className="secondary export-btn"
                         href={`/api/sessions/${session.id}/export`}
+                        title="导出 Markdown"
                         download
                       >
                         <Download size={15} />
-                        导出记录
+                        导出 Markdown
                       </a>
                     )}
                   </div>
@@ -1416,15 +1417,31 @@ function App() {
                           )}
                           <button
                             className="follow-btn"
-                            onClick={() => setFollowing(!following)}
+                            onClick={() => setFollowing((value) => !value)}
                           >
                             <span
                               className={following ? "status-dot" : "tiny-dot"}
                             />
-                            {following ? "跟随最新" : "已暂停跟随"}
+                            {following ? "暂停跟随" : "回到最新"}
                           </button>
                         </div>
-                        <div className="messages">
+                        <div
+                          className="messages"
+                          ref={messagesRef}
+                          onWheel={(event) => {
+                            if (
+                              event.deltaY < 0 &&
+                              event.currentTarget.scrollTop > 0
+                            )
+                              setFollowing(false);
+                          }}
+                          onScroll={(event) => {
+                            const { scrollHeight, clientHeight, scrollTop } =
+                              event.currentTarget;
+                            if (scrollHeight - clientHeight - scrollTop > 2)
+                              setFollowing(false);
+                          }}
+                        >
                           {shownMessages.length ? (
                             shownMessages.map((m, i) => (
                               <React.Fragment key={m.id}>
@@ -1529,7 +1546,6 @@ function App() {
                               </button>
                             </div>
                           )}
-                          <div ref={bottomRef} />
                         </div>
                         {terminal(session.status) &&
                           session.messages.length > 0 && (
@@ -1907,7 +1923,8 @@ function App() {
                             <div>
                               <a
                                 className="icon-btn"
-                                title="导出记录"
+                                title="导出 Markdown"
+                                aria-label="导出 Markdown"
                                 href={`/api/sessions/${s.id}/export`}
                                 download
                               >

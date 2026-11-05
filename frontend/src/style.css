@@ -1284,7 +1284,6 @@ button:hover {
   max-height: 65vh;
   min-height: 380px;
   overflow-y: auto;
-  scroll-behavior: smooth;
 }
 .round-divider {
   display: flex;

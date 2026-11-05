@@ -59,6 +59,16 @@ fs.mkdirSync(output, { recursive: true });
     await page.getByRole('button',{name:'关闭',exact:true}).click();
     console.log('PASS: HTML upload reaches real backend; extracted preview excludes executable scripts');
 
+    await page.evaluate(() => {
+      window.EventSource = class extends window.EventSource {
+        constructor(url) {
+          super(url);
+          window.discussionStream = this;
+        }
+      };
+    });
+    let remainingEvents;
+    const pausedUpdate = '正在阅读前文时收到的新发言。';
     await page.route('**/api/sessions', async route=>{
       if(route.request().method()!=='POST')return route.continue();
       const body=route.request().postDataJSON();
@@ -67,17 +77,61 @@ fs.mkdirSync(output, { recursive: true });
       const now=Date.now()/1000;
       const one={id:'test-m1',agent_id:agent.id,agent_name:agent.name,color:agent.color,round:1,kind:'discussion',content:'',status:'streaming',created:now};
       const two={id:'test-m2',agent_id:critic.id,agent_name:critic.name,color:critic.color,round:body.rounds+1,kind:'summary',content:'',status:'streaming',created:now};
-      const text='**核验结果：增长 20%。** [D1:L2]\n\n原文所述数值可用于计算。';
+      const text='**核验结果：增长 20%。** [D1:L2]\n\n' + '原文所述数值可用于计算。\n\n'.repeat(40);
       const report='## 修订建议\n\n用户从100增至120，增长率为20%。[D1:L2]';
-      finalSession={id:'browser-session',...body,status:'completed',tokens:150,created:now,cursor:9,messages:[{...one,content:text,status:'completed'},{...two,content:report,status:'completed'}]};
-      const events=[{type:'message',message:one},{type:'delta',id:one.id,text},{type:'message_end',id:one.id,status:'completed',tokens:75},{type:'message',message:two},{type:'delta',id:two.id,text:report},{type:'message_end',id:two.id,status:'completed',tokens:75},{type:'status',status:'completed'}];
-      await page.route('**/api/sessions/browser-session/events?*',r=>r.fulfill({contentType:'text/event-stream',body:events.map((p,i)=>`id: ${i+1}\ndata: ${JSON.stringify(p)}\n\n`).join('')+'event: end\ndata: {}\n\n'}));
+      finalSession={id:'browser-session',...body,status:'completed',tokens:150,created:now,cursor:8,messages:[{...one,content:text+pausedUpdate,status:'completed'},{...two,content:report,status:'completed'}]};
+      const initialEvents = [{type:'message',message:one},{type:'delta',id:one.id,text}];
+      remainingEvents = [
+        {type:'message_end',id:one.id,status:'completed',tokens:75},
+        {type:'message',message:two},
+        {type:'delta',id:two.id,text:report},
+        {type:'message_end',id:two.id,status:'completed',tokens:75},
+        {type:'status',status:'completed'},
+      ];
+      await page.route('**/api/sessions/browser-session/events?*',r=>r.fulfill({
+        contentType:'text/event-stream',
+        body:'retry: 60000\n\n'+initialEvents.map((p,i)=>`id: ${i+1}\ndata: ${JSON.stringify(p)}\n\n`).join(''),
+      }));
       await page.route('**/api/sessions/browser-session',r=>r.fulfill({json:finalSession}));
       await route.fulfill({status:201,json:{...finalSession,status:'running',tokens:0,messages:[],cursor:0}});
     });
     await page.locator('.inspector-footer').getByRole('button',{name:'开始研讨',exact:true}).click();
     await page.locator('.message').first().waitFor();
     await page.getByText('增长 20%。',{exact:false}).first().waitFor();
+    const messages = page.locator('.messages');
+    await page.waitForFunction(() => {
+      const list = document.querySelector('.messages');
+      return list.scrollTop > 0 && list.scrollHeight - list.clientHeight - list.scrollTop < 2;
+    });
+    await messages.evaluate(list => { list.scrollTop = 0; });
+    const resumeFollow = page.getByRole('button', {name:'回到最新',exact:true});
+    await resumeFollow.waitFor();
+    await page.evaluate(text => {
+      window.discussionStream.dispatchEvent(new MessageEvent('message', {
+        data: JSON.stringify({type:'delta',id:'test-m1',text}), lastEventId:'3',
+      }));
+    }, pausedUpdate);
+    await page.getByText(pausedUpdate, {exact:true}).waitFor();
+    assert.equal(await messages.evaluate(list => list.scrollTop), 0);
+    await resumeFollow.click();
+    await page.evaluate(events => {
+      events.forEach((event, index) => {
+        window.discussionStream.dispatchEvent(new MessageEvent('message', {
+          data: JSON.stringify(event), lastEventId:String(index + 4),
+        }));
+      });
+      window.discussionStream.dispatchEvent(new MessageEvent('end'));
+    }, remainingEvents);
+    await page.waitForFunction(() => {
+      const list = document.querySelector('.messages');
+      return list.querySelector('.summary-message') && list.scrollHeight - list.clientHeight - list.scrollTop < 2;
+    });
+
+    const exportLink = page.getByRole('link',{name:'导出 Markdown',exact:true});
+    assert.equal(await exportLink.getAttribute('href'), '/api/sessions/browser-session/export');
+    assert.notEqual(await exportLink.getAttribute('download'), null);
+    console.log('PASS: reviewing earlier messages survives streaming, follow resumes, and the Markdown link is downloadable');
+
     await page.locator('.citation').first().click();
     await page.getByRole('dialog').waitFor();
     assert.ok((await page.locator('.source-code .highlight').innerText()).includes('L2'));

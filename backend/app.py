@@ -12,6 +12,7 @@ import time
 import uuid
 import zipfile
 from contextlib import asynccontextmanager
+from itertools import groupby
 from pathlib import Path
 from typing import Literal
 
@@ -519,19 +520,72 @@ async def events(sid: str, request: Request, after: int = 0):
     return StreamingResponse(generate(), media_type="text/event-stream", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
+def markdown_label(text: str) -> str:
+    return re.sub(r"([\\`*_\[\]#<>&])", r"\\\1", " ".join(text.splitlines()))
+
+
+def markdown_quote(text: str) -> str:
+    return "\n".join(f"> {line}" if line else ">" for line in text.splitlines())
+
+
+EXPORT_STATUS = {
+    "running": "研讨中",
+    "completed": "已完成",
+    "stopped": "已停止",
+    "failed": "发生错误",
+    "interrupted": "已中断",
+    "streaming": "正在发言（导出时）",
+    "truncated": "已截断",
+}
+
+
+def export_message(message, heading_level):
+    heading = f"{'#' * heading_level} {markdown_label(message['agent_name'])}"
+    status = EXPORT_STATUS.get(message["status"], message["status"])
+    return [heading, f"**发言状态** {status}", markdown_quote(message["content"] or "（尚无内容）")]
+
+
 @app.get("/api/sessions/{sid}/export")
 def export(sid: str):
     s = get_session(sid)
-    parts = [f"# {s['title']}", f"研讨目标：{s['goal']}", f"状态：{s['status']} · {s['rounds']} 轮 · {s['tokens']} tokens", "## 参考文件"]
+    status = EXPORT_STATUS.get(s["status"], s["status"])
+    parts = [
+        f"# {markdown_label(s['title'])}",
+        f"**研讨状态** {status} · {s['rounds']} 轮 · {s['tokens']} tokens",
+        "## 研讨目标",
+        markdown_quote(s["goal"]),
+        "## 公开对话",
+    ]
+    discussion = [m for m in s["messages"] if m["kind"] != "summary"]
+    if not discussion:
+        parts.append("尚无发言。")
+    for round_number, messages in groupby(discussion, key=lambda m: m["round"]):
+        parts.append(f"### 第 {round_number} 轮")
+        for message in messages:
+            parts.extend(export_message(message, heading_level=4))
+
+    parts.extend(["---", "## 最终报告"])
+    reports = [m for m in s["messages"] if m["kind"] == "summary"]
+    if not reports:
+        parts.append("尚未生成最终报告。")
+    for report in reports:
+        parts.extend(export_message(report, heading_level=3))
+
+    parts.extend(["---", "## 参考文件"])
     with db() as c:
         for index, did in enumerate(s["document_ids"]):
             doc = c.execute("SELECT name,content FROM documents WHERE id=?", (did,)).fetchone()
             if doc:
-                parts.append(f"### D{index + 1} · {doc['name']}\n\n" + "\n".join(f"L{i + 1}: {line}" for i, line in enumerate(doc["content"].splitlines())))
-    for m in s["messages"]:
-        label = "最终报告" if m["kind"] == "summary" else f"第 {m['round']} 轮"
-        parts.append(f"## {label} · {m['agent_name']}\n\n{m['content']}\n\n> 发言状态：{m['status']}")
-    return Response("\n\n".join(parts), media_type="text/markdown; charset=utf-8", headers={"Content-Disposition": f'attachment; filename="agora-{sid[:8]}.md"'})
+                parts.append(f"### D{index + 1} · {markdown_label(doc['name'])}")
+                parts.append("\n".join(f"    L{i + 1}: {line}" for i, line in enumerate(doc["content"].splitlines())))
+    return Response(
+        "\n\n".join(parts) + "\n",
+        media_type="text/markdown",
+        headers={
+            "Content-Disposition": f'attachment; filename="agora-{sid[:8]}.md"',
+            "Cache-Control": "no-store",
+        },
+    )
 
 
 # Frontend source stays independent; the production image supplies its build.
