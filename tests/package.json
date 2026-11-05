@@ -1,0 +1,6 @@
+{
+  "name": "agora-browser-checks",
+  "private": true,
+  "scripts": { "test": "node browser.cjs" },
+  "devDependencies": { "playwright": "1.62.1" }
+}

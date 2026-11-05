@@ -1,0 +1,26 @@
+name: agora
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DATA_DIR: /data
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+    volumes:
+      - agora-data:/data
+    networks: [agora]
+    init: true
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${AGORA_PORT:-3000}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks: [agora]
+    init: true
+volumes:
+  agora-data:
+networks:
+  agora:
