@@ -2,22 +2,37 @@
 chcp 65001 >nul
 setlocal
 cd /d "%~dp0"
-title 共识 Agora
+title Agora
 docker info >nul 2>&1
 if errorlevel 1 (
-  echo 请先启动 Docker Desktop，并确认使用 Linux containers 模式。
+  echo Please start Docker Desktop using Linux containers, then try again.
   pause
   exit /b 1
 )
-echo 正在构建并启动共识 Agora，首次运行需要下载依赖，请稍候。
-docker compose up -d --build
+echo Building Agora and waiting for the frontend and backend to become healthy...
+docker compose up -d --build --wait --wait-timeout 90
 if errorlevel 1 (
-  echo 启动失败，请查看上方错误信息。
+  echo Startup failed. Container status and recent logs:
+  docker compose ps -a
+  docker compose logs --tail 30
   pause
   exit /b 1
 )
-if not defined AGORA_PORT set AGORA_PORT=3000
-if exist ".env" for /f "usebackq tokens=1,* delims==" %%a in (".env") do if "%%a"=="AGORA_PORT" set AGORA_PORT=%%b
-echo 启动成功，请访问 http://localhost:%AGORA_PORT%
-start "" "http://localhost:%AGORA_PORT%"
+set "AGORA_ACTUAL_PORT="
+for /f "tokens=2 delims=:" %%p in ('docker compose port frontend 80') do set "AGORA_ACTUAL_PORT=%%p"
+if not defined AGORA_ACTUAL_PORT (
+  echo Could not read the frontend port. Check the container status below:
+  docker compose ps -a
+  pause
+  exit /b 1
+)
+set "AGORA_URL=http://127.0.0.1:%AGORA_ACTUAL_PORT%"
+echo.
+echo Both services are ready. Published ports:
+docker compose ps
+echo.
+echo In Docker Desktop, expand the agora group to see the frontend port.
+echo The backend API is accessed through the frontend.
+echo Open: %AGORA_URL%
+start "" "%AGORA_URL%"
 pause

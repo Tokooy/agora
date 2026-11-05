@@ -9,10 +9,26 @@
 安装并启动 Docker Desktop（Linux containers 模式），在此文件夹打开终端：
 
 ```bash
-docker compose up -d --build
+docker compose up -d --build --wait --wait-timeout 90
 ```
 
-打开 [http://localhost:3000](http://localhost:3000)。Windows 也可以双击 `启动 Agora.bat`。
+打开 [http://localhost:3000](http://localhost:3000)。Windows 也可以双击 `启动 Agora.bat`，脚本会等待前后端健康检查通过，再显示实际端口映射并打开浏览器；失败时显示容器状态和最近日志。
+
+### Docker Desktop 中的访问端口
+
+Docker Desktop 的 `agora` 行是 Compose 项目分组，折叠时 Port(s) 可能显示 `-`。点击该行左侧的箭头，展开后可看到：
+
+- `agora-frontend-1`：网页入口，默认映射 `3000:80`，访问 [http://localhost:3000](http://localhost:3000)。
+- `agora-backend-1`：内部 API，监听容器内 `8000`，通过前端代理访问。
+
+也可以在项目文件夹运行以下命令确认实际网页端口（会读取 `.env` 中的自定义端口）：
+
+```bash
+docker compose port frontend 80
+docker compose ps
+```
+
+默认第一条输出 `127.0.0.1:3000`。项目分组行显示 `-` 本身不代表服务启动失败。
 
 首次打开时：
 
