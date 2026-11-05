@@ -285,7 +285,7 @@ function App() {
   const [onboard, setOnboard] = useState(false),
     [step, setStep] = useState(1),
     [count, setCount] = useState(3);
-  const [configOpen, setConfigOpen] = useState(false),
+  const [configPanel, setConfigPanel] = useState<"roles" | "keys" | null>(null),
     [keyInputs, setKeyInputs] = useState<Record<string, string>>({}),
     [sharedInput, setSharedInput] = useState(""),
     [showKeys, setShowKeys] = useState(false),
@@ -307,6 +307,8 @@ function App() {
     sessionRef = useRef<Session | null>(null);
   const active =
     !!session && !terminal(session.status) && session.id !== "demo";
+  const editRoles = onboard || configPanel === "roles";
+  const editKeys = onboard || configPanel === "keys";
   useEffect(() => {
     sessionRef.current = session;
   }, [session]);
@@ -325,6 +327,7 @@ function App() {
       sessions: SessionHead[];
       defaults: Agent[];
       keys: KeyState;
+      agents: Agent[] | null;
     }>("/api/bootstrap");
     setDocs(data.documents);
     setSessions(data.sessions);
@@ -340,20 +343,24 @@ function App() {
         try {
           config = JSON.parse(localStorage.getItem("agora-config") || "null");
         } catch {}
-        const saved =
+        const localAgents =
           Array.isArray(config?.agents) && config.agents.length
-            ? config.agents
-            : data.defaults;
+            ? (config.agents as Agent[])
+            : null;
+        const saved = data.agents ?? localAgents ?? data.defaults;
+        if (!data.agents && config?.configured && localAgents) {
+          await api<KeyState>("/api/settings", {
+            method: "POST",
+            body: JSON.stringify({ agents: localAgents }),
+          }).catch(() =>
+            notify("旧角色仍保留在浏览器中，可在角色设置里重新保存。"),
+          );
+        }
         setAgents(saved);
         setSetupAgents(saved);
         setCount(saved.length);
         if (config?.rounds) setRounds(config.rounds);
-        setOnboard(
-          !config?.configured ||
-            !saved.every(
-              (a: Agent) => data.keys.shared || data.keys.agents[a.id],
-            ),
-        );
+        setOnboard(!data.agents && !config?.configured);
         setReady(true);
       } catch (e) {
         setLoadError((e as Error).message);
@@ -367,10 +374,10 @@ function App() {
         const old = JSON.parse(localStorage.getItem("agora-config") || "{}");
         localStorage.setItem(
           "agora-config",
-          JSON.stringify({ ...old, agents, rounds }),
+          JSON.stringify({ ...old, configured: old.configured || !onboard, agents, rounds }),
         );
       } catch {}
-  }, [agents, rounds, ready]);
+  }, [agents, rounds, ready, onboard]);
   useLayoutEffect(() => {
     const list = messagesRef.current;
     if (following && list) list.scrollTop = list.scrollHeight;
@@ -492,7 +499,7 @@ function App() {
       return;
     }
     if (!agents.every((a) => keys.shared || keys.agents[a.id])) {
-      openConfig();
+      openConfig("keys");
       return;
     }
     setBusy(true);
@@ -541,12 +548,15 @@ function App() {
       setBusy(false);
     }
   }
-  function openConfig() {
-    setSetupAgents(agents.map((a) => ({ ...a })));
+  function closeConfig() {
+    setConfigPanel(null);
     setKeyInputs({});
     setSharedInput("");
     setShowKeys(false);
-    setConfigOpen(true);
+  }
+  function openConfig(panel: "roles" | "keys") {
+    setSetupAgents(agents.map((a) => ({ ...a })));
+    setConfigPanel(panel);
   }
   function resizeAgents(n: number) {
     setCount(n);
@@ -573,17 +583,22 @@ function App() {
     );
   }
   async function saveConfig() {
-    if (!setupAgents.every((a) => a.name.trim() && a.prompt.trim())) {
+    if (
+      editRoles &&
+      !setupAgents.every((a) => a.name.trim() && a.prompt.trim())
+    ) {
       notify("请填写每位 Agent 的名称和职责");
       return;
     }
     if (
+      editRoles &&
       new Set(setupAgents.map((a) => a.name.trim())).size !== setupAgents.length
     ) {
       notify("请为每位 Agent 使用不同名称，方便区分发言");
       return;
     }
     if (
+      onboard &&
       !setupAgents.every(
         (a) =>
           keyInputs[a.id]?.trim() ||
@@ -597,27 +612,26 @@ function App() {
     }
     setBusy(true);
     try {
+      const next = setupAgents.map((a) => ({ ...a, name: a.name.trim() }));
       const saved = await api<KeyState>("/api/settings", {
         method: "POST",
         body: JSON.stringify({
-          ...(sharedInput.trim() ? { shared_key: sharedInput } : {}),
-          agent_keys: Object.fromEntries(
-            Object.entries(keyInputs).filter(([, v]) => v.trim()),
-          ),
+          ...(editRoles ? { agents: next } : {}),
+          ...(editKeys
+            ? {
+                ...(sharedInput.trim() ? { shared_key: sharedInput } : {}),
+                agent_keys: Object.fromEntries(
+                  Object.entries(keyInputs).filter(([, v]) => v.trim()),
+                ),
+              }
+            : {}),
         }),
       });
       setKeys(saved);
-      const next = setupAgents.map((a) => ({ ...a, name: a.name.trim() }));
-      setAgents(next);
-      localStorage.setItem(
-        "agora-config",
-        JSON.stringify({ configured: true, agents: next, rounds }),
-      );
+      if (editRoles) setAgents(next);
       setOnboard(false);
-      setConfigOpen(false);
-      setKeyInputs({});
-      setSharedInput("");
-      notify("Agent 配置已保存");
+      closeConfig();
+      notify(editRoles ? "Agent 配置已保存" : "API Key 已保存");
     } catch (e) {
       notify((e as Error).message);
     } finally {
@@ -627,21 +641,12 @@ function App() {
   async function testAgent(a: Agent) {
     setTesting(a.id);
     try {
-      if (keyInputs[a.id]?.trim() || sharedInput.trim()) {
-        const saved = await api<KeyState>("/api/settings", {
-          method: "POST",
-          body: JSON.stringify({
-            ...(sharedInput.trim() ? { shared_key: sharedInput } : {}),
-            agent_keys: keyInputs[a.id]?.trim()
-              ? { [a.id]: keyInputs[a.id] }
-              : {},
-          }),
-        });
-        setKeys(saved);
-      }
+      const trialKey =
+        keyInputs[a.id]?.trim() ||
+        (keys.agents[a.id] ? "" : sharedInput.trim());
       const result = await api<{ ok: boolean; model_available: boolean }>(
         "/api/connection",
-        { method: "POST", body: JSON.stringify(a) },
+        { method: "POST", body: JSON.stringify({ ...a, trial_key: trialKey }) },
       );
       notify(
         result.model_available
@@ -732,7 +737,7 @@ function App() {
       });
       setSelected([doc.id]);
       setOnboard(false);
-      setConfigOpen(false);
+      closeConfig();
       setView("studio");
       setTab("discussion");
       setError("");
@@ -759,136 +764,150 @@ function App() {
   const readyKeys = team.filter((a) => keys.shared || keys.agents[a.id]).length;
   const configForm = (
     <>
-      <div className="config-number">
-        <div>
-          <strong>参与 Agent</strong>
-          <p>每位 Agent 独立调用 API，并读取彼此的公开发言。</p>
+      {editRoles && (
+        <div className="config-number">
+          <div>
+            <strong>参与 Agent</strong>
+            <p>每位 Agent 独立调用 API，并读取彼此的公开发言。</p>
+          </div>
+          <div className="stepper">
+            <IconButton
+              title="减少 Agent"
+              disabled={setupAgents.length <= 1 || active}
+              onClick={() => resizeAgents(setupAgents.length - 1)}
+            >
+              <Minus size={14} />
+            </IconButton>
+            <b>{setupAgents.length}</b>
+            <IconButton
+              title="增加 Agent"
+              disabled={setupAgents.length >= 8 || active}
+              onClick={() => resizeAgents(setupAgents.length + 1)}
+            >
+              <Plus size={14} />
+            </IconButton>
+          </div>
         </div>
-        <div className="stepper">
-          <IconButton
-            title="减少 Agent"
-            disabled={setupAgents.length <= 1 || active}
-            onClick={() => resizeAgents(setupAgents.length - 1)}
-          >
-            <Minus size={14} />
-          </IconButton>
-          <b>{setupAgents.length}</b>
-          <IconButton
-            title="增加 Agent"
-            disabled={setupAgents.length >= 8 || active}
-            onClick={() => resizeAgents(setupAgents.length + 1)}
-          >
-            <Plus size={14} />
-          </IconButton>
-        </div>
-      </div>
+      )}
       <div className="agent-forms">
         {setupAgents.map((a, i) => (
           <div className="agent-form" key={a.id}>
             <div className="agent-form-top">
               <Avatar agent={a} />
-              <span>AGENT {String(i + 1).padStart(2, "0")}</span>
-              <button
-                type="button"
-                className="text-btn"
-                disabled={testing !== null}
-                onClick={() => testAgent(a)}
-              >
-                {testing === a.id ? (
-                  <Loader2 className="spin" size={13} />
-                ) : (
-                  <span className="status-dot" />
-                )}
-                测试连接
-              </button>
-            </div>
-            <div className="form-row">
-              <label>
-                Agent 名称
-                <input
-                  aria-label={`Agent ${i + 1} 名称`}
-                  value={a.name}
-                  maxLength={30}
-                  onChange={(e) => updateAgent(i, { name: e.target.value })}
-                  placeholder="由你命名"
-                />
-              </label>
-              <label>
-                模型
-                <select
-                  value={a.model}
-                  onChange={(e) => updateAgent(i, { model: e.target.value })}
+              <span>
+                {editRoles ? `AGENT ${String(i + 1).padStart(2, "0")}` : a.name}
+              </span>
+              {editKeys && (
+                <button
+                  type="button"
+                  className="text-btn"
+                  disabled={testing !== null}
+                  onClick={() => testAgent(a)}
                 >
-                  <option value="deepseek-flash">DeepSeek Flash</option>
-                  <option value="deepseek-v4-pro">DeepSeek V4 Pro</option>
-                </select>
-              </label>
+                  {testing === a.id ? (
+                    <Loader2 className="spin" size={13} />
+                  ) : (
+                    <span className="status-dot" />
+                  )}
+                  测试连接
+                </button>
+              )}
             </div>
-            <label>
-              对应 API Key
-              <div className="key-field">
-                <KeyRound size={15} />
-                <input
-                  aria-label={`Agent ${i + 1} API Key`}
-                  autoComplete="off"
-                  spellCheck={false}
-                  type={showKeys ? "text" : "password"}
-                  value={keyInputs[a.id] || ""}
-                  onChange={(e) =>
-                    setKeyInputs((k) => ({ ...k, [a.id]: e.target.value }))
-                  }
-                  placeholder={
-                    keys.agents[a.id]
-                      ? "已配置 · 留空保持"
-                      : keys.shared
-                        ? "已使用共用 Key · 可填入独立 Key"
-                        : "sk-…"
-                  }
-                />
+            {editRoles && (
+              <div className="form-row">
+                <label>
+                  Agent 名称
+                  <input
+                    aria-label={`Agent ${i + 1} 名称`}
+                    value={a.name}
+                    maxLength={30}
+                    onChange={(e) => updateAgent(i, { name: e.target.value })}
+                    placeholder="由你命名"
+                  />
+                </label>
+                <label>
+                  模型
+                  <select
+                    value={a.model}
+                    onChange={(e) => updateAgent(i, { model: e.target.value })}
+                  >
+                    <option value="deepseek-flash">DeepSeek Flash</option>
+                    <option value="deepseek-v4-pro">DeepSeek V4 Pro</option>
+                  </select>
+                </label>
               </div>
-            </label>
-            <label>
-              角色与职责
-              <textarea
-                rows={2}
-                value={a.prompt}
-                maxLength={3000}
-                onChange={(e) => updateAgent(i, { prompt: e.target.value })}
-              />
-            </label>
+            )}
+            {editKeys && (
+              <label>
+                对应 API Key
+                <div className="key-field">
+                  <KeyRound size={15} />
+                  <input
+                    aria-label={`Agent ${i + 1} API Key`}
+                    autoComplete="off"
+                    spellCheck={false}
+                    type={showKeys ? "text" : "password"}
+                    value={keyInputs[a.id] || ""}
+                    onChange={(e) =>
+                      setKeyInputs((k) => ({ ...k, [a.id]: e.target.value }))
+                    }
+                    placeholder={
+                      keys.agents[a.id]
+                        ? "已配置 · 留空保持"
+                        : keys.shared
+                          ? "已使用共用 Key · 可填入独立 Key"
+                          : "sk-…"
+                    }
+                  />
+                </div>
+              </label>
+            )}
+            {editRoles && (
+              <label>
+                角色与职责
+                <textarea
+                  aria-label={`Agent ${i + 1} 角色与职责`}
+                  rows={2}
+                  value={a.prompt}
+                  maxLength={3000}
+                  onChange={(e) => updateAgent(i, { prompt: e.target.value })}
+                />
+              </label>
+            )}
           </div>
         ))}
       </div>
-      <div className="config-extras">
-        <label className="checkbox">
-          <input
-            type="checkbox"
-            checked={showKeys}
-            onChange={(e) => setShowKeys(e.target.checked)}
-          />
-          显示 API Key
-        </label>
-        <details>
-          <summary>
-            使用同一个 Key？设置共用 Key <ChevronDown size={13} />
-          </summary>
-          <input
-            autoComplete="off"
-            type={showKeys ? "text" : "password"}
-            value={sharedInput}
-            onChange={(e) => setSharedInput(e.target.value)}
-            placeholder={
-              keys.shared
-                ? "已配置共用 Key · 留空保持"
-                : "填入共用 DeepSeek API Key"
-            }
-          />
-          <p>
-            各 Agent 的独立 Key 优先。Key
-            只保留在后端内存中，重启服务后需重新输入。
-          </p>
-        </details>
-      </div>
+      {editKeys && (
+        <div className="config-extras">
+          <label className="checkbox">
+            <input
+              type="checkbox"
+              checked={showKeys}
+              onChange={(e) => setShowKeys(e.target.checked)}
+            />
+            显示 API Key
+          </label>
+          <details>
+            <summary>
+              使用同一个 Key？设置共用 Key <ChevronDown size={13} />
+            </summary>
+            <input
+              autoComplete="off"
+              type={showKeys ? "text" : "password"}
+              value={sharedInput}
+              onChange={(e) => setSharedInput(e.target.value)}
+              placeholder={
+                keys.shared
+                  ? "已配置共用 Key · 留空保持"
+                  : "填入共用 DeepSeek API Key"
+              }
+            />
+            <p>
+              各 Agent 的独立 Key 优先。保存后的 Key 会从本地 Docker 数据卷恢复。
+            </p>
+          </details>
+        </div>
+      )}
     </>
   );
   if (loadError)
@@ -897,7 +916,7 @@ function App() {
         <AlertCircle size={28} />
         <h2>暂时无法连接后端</h2>
         <p>{loadError}</p>
-        <p>请确认 Docker Compose 中两个服务均已启动。</p>
+        <p>请确认 Docker 中的 agora 容器已启动。</p>
         <button className="primary" onClick={() => location.reload()}>
           重新连接
         </button>
@@ -1052,7 +1071,7 @@ function App() {
                 </button>
                 <p className="privacy-note">
                   <KeyRound size={12} />
-                  Key 不会保存在浏览器或研讨记录中。
+                  Key 保存在本地 Docker 数据卷中。
                 </p>
               </div>
             )}
@@ -1132,9 +1151,14 @@ function App() {
                 <span className="status-dot" />
                 本地工作空间 <span>V1.0</span>
               </div>
-              <button onClick={openConfig}>
+              <button title="Agent 角色设置" onClick={() => openConfig("roles")}>
                 <Settings2 size={17} />
-                Agent 与 API 设置
+                Agent 角色设置
+                <ArrowUpRight size={14} />
+              </button>
+              <button title="API Key 设置" onClick={() => openConfig("keys")}>
+                <KeyRound size={17} />
+                API Key 设置
                 <ArrowUpRight size={14} />
               </button>
               <div className="user-profile">
@@ -1670,10 +1694,10 @@ function App() {
                         </h4>
                         <button
                           className="text-btn"
-                          onClick={openConfig}
+                          onClick={() => openConfig("roles")}
                           disabled={active}
                         >
-                          配置
+                          编辑角色
                           <Settings2 size={13} />
                         </button>
                       </div>
@@ -1961,15 +1985,13 @@ function App() {
           </div>
         </div>
       )}
-      {configOpen && (
+      {configPanel && (
         <Modal
-          title="Agent 与 API 设置"
-          subtitle="数量、名字与视角，由你决定。"
-          onClose={() => {
-            setConfigOpen(false);
-            setKeyInputs({});
-            setSharedInput("");
-          }}
+          title={configPanel === "roles" ? "Agent 角色设置" : "API Key 设置"}
+          subtitle={configPanel === "roles"
+            ? "角色设定保存后用于新研讨。"
+            : "为 Agent 设置独立 Key，也可以使用共用 Key。留空保留原配置。"}
+          onClose={closeConfig}
           wide
         >
           {active ? (
@@ -1983,7 +2005,7 @@ function App() {
               <footer className="modal-footer">
                 <button
                   className="secondary"
-                  onClick={() => setConfigOpen(false)}
+                  onClick={closeConfig}
                 >
                   取消
                 </button>
@@ -1997,7 +2019,7 @@ function App() {
                   ) : (
                     <Check size={15} />
                   )}
-                  保存配置
+                  {configPanel === "roles" ? "保存角色" : "保存 API Key"}
                 </button>
               </footer>
             </>

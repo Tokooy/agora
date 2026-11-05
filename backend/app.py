@@ -29,12 +29,12 @@ from pypdf import PdfReader
 DATA = Path(os.getenv("DATA_DIR", "/data"))
 DATA.mkdir(parents=True, exist_ok=True)
 DB_PATH = DATA / "agora.sqlite3"
+SETTINGS_PATH = DATA / "settings.sqlite3"
 MAX_FILE_BYTES = 20 * 1024 * 1024
 MAX_CHARS = 120_000
 TERMINAL = {"completed", "stopped", "failed", "interrupted"}
 API_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/")
 DEFAULT_KEY = os.getenv("DEEPSEEK_API_KEY", "").strip()
-KEYS: dict[str, str] = {}
 TASKS: dict[str, asyncio.Task] = {}
 ACTIVE_AGENT_IDS: set[str] = set()
 DEFAULT_AGENTS = [
@@ -63,6 +63,33 @@ def init_db():
         """)
         c.execute("UPDATE sessions SET status='interrupted' WHERE status IN ('running', 'stopping')")
         c.execute("UPDATE messages SET status='interrupted' WHERE status='streaming'")
+
+
+def init_settings_db():
+    # Keep credentials apart from transcripts and restrict access to the service user.
+    os.close(os.open(SETTINGS_PATH, os.O_CREAT | os.O_RDWR, 0o600))
+    with contextlib.closing(sqlite3.connect(SETTINGS_PATH)) as c, c:
+        c.execute("CREATE TABLE IF NOT EXISTS settings (name TEXT PRIMARY KEY, value TEXT NOT NULL)")
+
+
+def read_settings():
+    with contextlib.closing(sqlite3.connect(SETTINGS_PATH)) as c:
+        return dict(c.execute("SELECT name, value FROM settings"))
+
+
+def resolve_keys(stored):
+    shared_key = stored.get("shared_key", DEFAULT_KEY)
+    agent_keys = {
+        name.removeprefix("agent:"): value
+        for name, value in stored.items()
+        if name.startswith("agent:") and value
+    }
+    return shared_key, agent_keys
+
+
+def key_status(stored):
+    shared_key, agent_keys = resolve_keys(stored)
+    return {"shared": bool(shared_key), "agents": dict.fromkeys(agent_keys, True)}
 
 
 def write_event(c, sid, kind, **data):
@@ -189,8 +216,13 @@ class Agent(BaseModel):
 
 
 class Settings(BaseModel):
-    shared_key: str | None = Field(default=None, max_length=500)
+    shared_key: str | None = None
     agent_keys: dict[str, str] = Field(default_factory=dict)
+    agents: list[Agent] | None = Field(default=None, min_length=1, max_length=8)
+
+
+class ConnectionCheck(Agent):
+    trial_key: str | None = None
 
 
 class Discussion(BaseModel):
@@ -205,6 +237,7 @@ class Discussion(BaseModel):
 @asynccontextmanager
 async def lifespan(app):
     init_db()
+    init_settings_db()
     yield
     for task in list(TASKS.values()):
         task.cancel()
@@ -238,24 +271,48 @@ def bootstrap():
     with db() as c:
         docs = [dict(x) for x in c.execute("SELECT id,name,size,length(content) AS chars,created FROM documents ORDER BY created DESC")]
         sessions = [dict(x) for x in c.execute("SELECT id,title,status,rounds,created,tokens FROM sessions ORDER BY created DESC LIMIT 100")]
-    return {"documents": docs, "sessions": sessions, "defaults": DEFAULT_AGENTS, "keys": {"shared": bool(DEFAULT_KEY), "agents": {k: True for k, v in KEYS.items() if v}}}
+    stored = read_settings()
+    return {
+        "documents": docs,
+        "sessions": sessions,
+        "defaults": DEFAULT_AGENTS,
+        "keys": key_status(stored),
+        "agents": json.loads(stored["agents"]) if "agents" in stored else None,
+    }
 
 
 @app.post("/api/settings")
 def settings(body: Settings):
-    global DEFAULT_KEY
+    changes = {}
     if body.shared_key is not None:
-        DEFAULT_KEY = body.shared_key.strip()
-    for key, value in body.agent_keys.items():
-        if len(key) > 60 or len(value) > 500:
+        if len(body.shared_key) > 500:
             raise HTTPException(422, "API Key 配置过长")
-        KEYS[key] = value.strip()
-    return {"shared": bool(DEFAULT_KEY), "agents": {k: True for k, v in KEYS.items() if v}}
+        changes["shared_key"] = body.shared_key.strip()
+    for agent_id, value in body.agent_keys.items():
+        if not re.fullmatch(r"[a-zA-Z0-9_-]{1,60}", agent_id):
+            raise HTTPException(422, "Agent ID 格式无效")
+        if len(value) > 500:
+            raise HTTPException(422, "API Key 配置过长")
+        changes[f"agent:{agent_id}"] = value.strip()
+    if body.agents is not None:
+        if len({agent.id for agent in body.agents}) != len(body.agents):
+            raise HTTPException(422, "Agent ID 不可重复")
+        changes["agents"] = json.dumps([agent.model_dump() for agent in body.agents], ensure_ascii=False)
+    if changes:
+        with contextlib.closing(sqlite3.connect(SETTINGS_PATH)) as c, c:
+            c.executemany(
+                "INSERT INTO settings(name, value) VALUES (?, ?) ON CONFLICT(name) DO UPDATE SET value=excluded.value",
+                changes.items(),
+            )
+    return key_status(read_settings())
 
 
 @app.post("/api/connection")
-async def connection(body: Agent):
-    key = KEYS.get(body.id) or DEFAULT_KEY
+async def connection(body: ConnectionCheck):
+    if len(body.trial_key or "") > 500:
+        raise HTTPException(422, "API Key 配置过长")
+    shared_key, agent_keys = resolve_keys(read_settings())
+    key = (body.trial_key or "").strip() or agent_keys.get(body.id) or shared_key
     if not key:
         raise HTTPException(400, "请先保存 API Key")
     try:
@@ -452,7 +509,8 @@ async def create_session(body: Discussion):
         raise HTTPException(422, "Agent ID 不可重复")
     if len(set(body.document_ids)) != len(body.document_ids):
         raise HTTPException(422, "不可重复选择文件")
-    keys = {a.id: KEYS.get(a.id) or DEFAULT_KEY for a in body.agents}
+    shared_key, agent_keys = resolve_keys(read_settings())
+    keys = {a.id: agent_keys.get(a.id) or shared_key for a in body.agents}
     missing = [a.name for a in body.agents if not keys[a.id]]
     if missing:
         raise HTTPException(400, "请为以下 Agent 配置 API Key，或设置共用 Key：" + "、".join(missing))

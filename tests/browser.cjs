@@ -14,17 +14,26 @@ fs.mkdirSync(output, { recursive: true });
   const errors = [], cleanup = [];
   page.on('pageerror', e => errors.push(e.message));
   let testKeys = {shared:false, agents:{}};
+  let savedAgents = null;
   let finalSession;
   try {
     // Keep test credentials in browser-route mocks, never in the real server.
     await page.route('**/api/bootstrap', async route => {
       const response = await route.fetch();
       const data = await response.json();
-      await route.fulfill({json:{...data, keys:testKeys}});
+      await route.fulfill({json:{
+        ...data,
+        keys:testKeys,
+        agents:savedAgents,
+      }});
     });
     await page.route('**/api/settings', async route => {
       const body = route.request().postDataJSON();
-      testKeys = {shared:!!body.shared_key, agents:Object.fromEntries(Object.keys(body.agent_keys || {}).map(id=>[id,true]))};
+      if (body.agents) savedAgents = body.agents;
+      testKeys = {
+        shared:testKeys.shared || !!body.shared_key,
+        agents:{...testKeys.agents, ...Object.fromEntries(Object.keys(body.agent_keys || {}).map(id=>[id,true]))},
+      };
       await route.fulfill({json:testKeys});
     });
     await page.goto(base);
@@ -44,6 +53,29 @@ fs.mkdirSync(output, { recursive: true });
     assert.ok(!stored.includes('test-key'));
     await page.screenshot({path:path.join(output,'02-workbench.png'), fullPage:true});
     console.log('PASS: first-run count, custom names, independent API entry, no secrets in browser storage');
+
+    await page.getByRole('button',{name:'Agent 角色设置',exact:true}).click();
+    const roles = page.getByRole('dialog',{name:'Agent 角色设置'});
+    assert.equal(await roles.locator('input[type=password]').count(), 0);
+    const revisedRole = '只复核同比数据，按条列出依据。';
+    await roles.getByLabel('Agent 1 角色与职责',{exact:true}).fill(revisedRole);
+    await roles.getByRole('button',{name:'保存角色',exact:true}).click();
+    await roles.waitFor({state:'hidden'});
+    await page.evaluate(() => localStorage.removeItem('agora-config'));
+    testKeys = {shared:false, agents:{}};
+    await page.reload();
+    await page.locator('.empty-state').waitFor();
+    assert.equal(await page.locator('.wizard-step').count(), 0);
+    assert.match(await page.locator('.team-list').innerText(), /只复核同比数据/);
+
+    await page.getByRole('button',{name:'API Key 设置',exact:true}).click();
+    const keyPanel = page.getByRole('dialog',{name:'API Key 设置'});
+    assert.equal(await keyPanel.locator('textarea').count(), 0);
+    await keyPanel.getByLabel('Agent 1 API Key',{exact:true}).fill('test-key-one-never-sent');
+    await keyPanel.getByLabel('Agent 2 API Key',{exact:true}).fill('test-key-two-never-sent');
+    await keyPanel.getByRole('button',{name:'保存 API Key',exact:true}).click();
+    await keyPanel.waitFor({state:'hidden'});
+    console.log('PASS: reopening enters the workspace, and roles and keys are edited separately');
 
     const uploadResult = page.waitForResponse(r=>r.url().endsWith('/api/documents')&&r.request().method()==='POST');
     await page.locator('input[type=file]').setInputFiles({name:'browser-check.html',mimeType:'text/html',buffer:Buffer.from('<h1>浏览器测试报告</h1><p>用户从100增至120</p><script>window.__injected=true</script>')});
@@ -73,6 +105,7 @@ fs.mkdirSync(output, { recursive: true });
       if(route.request().method()!=='POST')return route.continue();
       const body=route.request().postDataJSON();
       const agent=body.agents[0];
+      assert.equal(agent.prompt, revisedRole);
       const critic=body.agents[1];
       const now=Date.now()/1000;
       const one={id:'test-m1',agent_id:agent.id,agent_name:agent.name,color:agent.color,round:1,kind:'discussion',content:'',status:'streaming',created:now};

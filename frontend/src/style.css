@@ -486,7 +486,7 @@ button:hover {
   letter-spacing: 0.5px;
 }
 .sidebar-bottom > button {
-  padding: 16px 10px 21px;
+  padding: 10px;
   display: flex;
   align-items: center;
   gap: 9px;

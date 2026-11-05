@@ -53,6 +53,8 @@ docker run -d --name agora --restart unless-stopped --init -p 127.0.0.1:3000:800
 
 每个 Agent 可以使用不同 Key，也可复用同一个 Key。独立 Key 优先于可选共用 Key。Key 不需要写进代码，也不需要发到聊天中。
 
+首次保存后再次打开 Agora 会直接进入工作台。在侧栏的「Agent 角色设置」修改名字、模型和职责，在「API Key 设置」更新独立或共用 Key。
+
 默认模型 `deepseek-flash`，可切换 `deepseek-v4-pro`，支持深度思考。模型和调用格式依据 [DeepSeek 官方文档](https://api-docs.deepseek.com/) 接入。
 
 ## 文件支持
@@ -80,8 +82,8 @@ docker run -d --name agora --restart unless-stopped --init -p 127.0.0.1:3000:800
 ## 保存与隐私
 
 - 文件提取正文和公开发言存于本机 `agora_agora-data` 数据卷，重建容器不会清空数据。
-- 界面输入的 API Key 只保存在服务进程内存，不写入浏览器、SQLite、导出文件或 Git；服务重启后需要重新输入。
-- 名称、职责和轮数保存在当前浏览器 localStorage，不包含 Key。
+- 界面保存的 API Key 和 Agent 设置存于本机 Docker 数据卷内权限受限的 `settings.sqlite3`。重启服务后自动恢复，浏览器只收到 Key 的配置状态。
+- 轮数偏好保存在当前浏览器 localStorage。
 - 执行真实研讨时，选中文档的提取正文和公开发言会发送给 DeepSeek。
 - 刷新页面不会停止研讨；SSE 按事件序号续接，历史记录可恢复实时进度。
 - 服务重启后，未完成研讨标记为中断，不自动重试付费请求。
@@ -100,7 +102,7 @@ docker start agora
 docker run --rm agora:local python -m unittest discover -s backend/tests -v
 ```
 
-端口冲突时，将 `.env.example` 复制为 `.env` 并修改 `AGORA_PORT=3001`，然后重新运行一键脚本。共用 Key 也可通过 `.env` 的 `DEEPSEEK_API_KEY` 注入；这种方式会存入 Docker 容器环境，和界面输入的仅内存方式不同。不要提交真实 `.env`。
+端口冲突时，将 `.env.example` 复制为 `.env` 并修改 `AGORA_PORT=3001`，然后重新运行一键脚本。共用 Key 也可通过 `.env` 的 `DEEPSEEK_API_KEY` 注入，作为未保存共用 Key 时的默认值。不要提交真实 `.env`。
 
 ## 源码结构与开发
 

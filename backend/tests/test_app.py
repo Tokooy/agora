@@ -61,8 +61,9 @@ class DocumentTests(unittest.TestCase):
 
 class DiscussionTests(unittest.TestCase):
     def setUp(self):
-        module.DEFAULT_KEY = "fake-not-persisted-secret"
-        module.KEYS.clear()
+        self.enterContext(patch.object(module, "DEFAULT_KEY", "fake-not-persisted-secret"))
+        settings_dir = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        self.enterContext(patch.object(module, "SETTINGS_PATH", settings_dir / "settings.sqlite3"))
         self.client_context = TestClient(module.app)
         self.client = self.client_context.__enter__()
         response = self.client.post("/api/documents", files={"file": ("test.html", "<h1>证据</h1><p>100 增至 120，增长 30%</p>".encode(), "text/html")})
@@ -240,13 +241,37 @@ class DiscussionTests(unittest.TestCase):
             self.assertIn("尚未生成最终报告。", download.text)
             self.client.post(f"/api/sessions/{sid}/stop")
 
-    def test_independent_keys_and_public_bootstrap(self):
-        self.client.post("/api/settings", json={"shared_key": "shared-secret", "agent_keys": {"analyst": "independent-secret"}})
-        bootstrap = self.client.get("/api/bootstrap").json()
-        self.assertTrue(bootstrap["keys"]["shared"])
-        self.assertTrue(bootstrap["keys"]["agents"]["analyst"])
+    def test_saved_keys_and_roles_survive_startup_and_role_only_edits(self):
+        self.client.post("/api/settings", json={
+            "shared_key": "shared-secret",
+            "agent_keys": {"analyst": "independent-secret"},
+            "agents": self.agents,
+        }).raise_for_status()
+        revised = {**self.agents[0], "prompt": "只核验同比计算。"}
+        self.client.post("/api/settings", json={"agents": [revised, self.agents[1]]}).raise_for_status()
+        module.DEFAULT_KEY = ""
+        with TestClient(module.app) as reopened:
+            bootstrap = reopened.get("/api/bootstrap").json()
+        self.assertEqual(bootstrap["keys"], {"shared": True, "agents": {"analyst": True}})
+        self.assertEqual(bootstrap["agents"][0]["prompt"], revised["prompt"])
         self.assertNotIn("independent-secret", json.dumps(bootstrap))
         self.assertNotIn("shared-secret", json.dumps(bootstrap))
+        self.assertEqual(module.SETTINGS_PATH.stat().st_mode & 0o777, 0o600)
+
+    def test_testing_an_unsaved_key_does_not_replace_saved_key(self):
+        self.client.post("/api/settings", json={"agent_keys": {"analyst": "saved-key"}}).raise_for_status()
+        sent_keys = []
+
+        def models(request):
+            sent_keys.append(request.headers["authorization"])
+            return httpx.Response(200, json={"data": [{"id": "deepseek-flash"}]})
+
+        real_client = httpx.AsyncClient
+        transport = httpx.MockTransport(models)
+        with patch.object(module.httpx, "AsyncClient", lambda **kw: real_client(transport=transport)):
+            self.client.post("/api/connection", json={**self.agents[0], "trial_key": "trial-key"}).raise_for_status()
+            self.client.post("/api/connection", json=self.agents[0]).raise_for_status()
+        self.assertEqual(sent_keys, ["Bearer trial-key", "Bearer saved-key"])
 
 
 class ProviderTests(unittest.IsolatedAsyncioTestCase):
