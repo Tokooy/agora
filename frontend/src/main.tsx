@@ -756,9 +756,7 @@ function App() {
     session?.messages.at(-1)?.round || 1,
     session?.rounds || rounds,
   );
-  const readyKeys = agents.filter(
-    (a) => keys.shared || keys.agents[a.id],
-  ).length;
+  const readyKeys = team.filter((a) => keys.shared || keys.agents[a.id]).length;
   const configForm = (
     <>
       <div className="config-number">
@@ -1352,15 +1350,22 @@ function App() {
                         </p>
                         <button
                           className="primary"
-                          onClick={() => inputRef.current?.click()}
-                          disabled={uploading}
+                          onClick={() =>
+                            selected.length
+                              ? start()
+                              : inputRef.current?.click()
+                          }
+                          disabled={uploading || busy}
                         >
                           {uploading ? (
                             <Loader2 className="spin" size={16} />
                           ) : (
                             <Upload size={16} />
                           )}
-                          上传第一份文件 <ArrowRight size={16} />
+                          {selected.length
+                            ? "文件已就绪，开始研讨"
+                            : "上传第一份文件"}{" "}
+                          <ArrowRight size={16} />
                         </button>
                         <button
                           className="demo-link"
@@ -1685,7 +1690,7 @@ function App() {
                       </div>
                       <div className="team-note">
                         <span className="status-dot" />
-                        {readyKeys} / {agents.length} 个 Agent 已配置 Key
+                        {readyKeys} / {team.length} 个 Agent 已配置 Key
                       </div>
                     </section>
                     <section>
@@ -1738,8 +1743,8 @@ function App() {
                         <span className="switch" />
                       </label>
                       <p className="call-estimate">
-                        预计 {agents.length * rounds + 1} 次 API 调用，包含 1
-                        次最终报告。
+                        预计 {team.length * (session?.rounds || rounds) + 1} 次
+                        API 调用，包含 1 次最终报告。
                       </p>
                     </section>
                     <div className="inspector-footer">

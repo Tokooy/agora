@@ -1,18 +1,18 @@
 :root {
   font-family: Inter, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
-  color: #26332d;
+  color: #24272d;
   background: #fff;
   font-synthesis: none;
   font-weight: 400;
   font-size: 13px;
-  --green: #345d48;
-  --dark: #253e30;
-  --muted: #8a918c;
-  --line: #e9ece7;
-  --soft: #f6f7f3;
-  --sidebar: #f8f9f6;
-  --blue: #eaf0f8;
-  --amber: #f8f0df;
+  --green: #30343b;
+  --dark: #20242a;
+  --muted: #626b78;
+  --line: #e7e9ed;
+  --soft: #f4f5f7;
+  --sidebar: #f7f8fa;
+  --blue: #f0f1f3;
+  --amber: #ecedef;
 }
 * {
   box-sizing: border-box;
@@ -58,14 +58,14 @@ a {
 }
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid #719c83;
+  outline: 2px solid #848587;
 }
 input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: #80a38b !important;
-  box-shadow: 0 0 0 3px #eaf0e9;
+  border-color: #8e8f91 !important;
+  box-shadow: 0 0 0 3px #ebecee;
 }
 button {
   transition:
@@ -77,7 +77,7 @@ button {
 input,
 textarea,
 select {
-  border: 1px solid #dfe5dd;
+  border: 1px solid #dfe0e2;
   border-radius: 7px;
   background: #fff;
   padding: 11px 12px;
@@ -85,7 +85,7 @@ select {
 }
 input::placeholder,
 textarea::placeholder {
-  color: #a2a8a1;
+  color: #626b78;
 }
 textarea {
   resize: vertical;
@@ -113,9 +113,9 @@ button:hover {
   line-height: 1.8;
 }
 .eyebrow {
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 1.6px;
-  color: #81917f;
+  color: #4b515b;
   font-weight: 600;
 }
 .primary,
@@ -135,26 +135,26 @@ button:hover {
 .primary {
   background: var(--green);
   color: #fff;
-  box-shadow: 0 2px 3px #233d2110;
+  box-shadow: 0 2px 3px #2a2b2d10;
 }
 .primary:hover {
-  background: #274a38;
+  background: #37383a;
   color: white;
-  box-shadow: 0 3px 10px #234a3520;
+  box-shadow: 0 3px 10px #35363820;
 }
 .secondary {
   border: 1px solid var(--line);
   background: #fff;
-  color: #68716a;
+  color: #24272d;
 }
 .secondary:hover {
-  border-color: #b4c5b2;
-  background: #f7f9f5;
+  border-color: #b8b9bb;
+  background: #f6f7f9;
 }
 .stop-btn {
-  background: #fbf1ed;
-  border: 1px solid #e9cbbf;
-  color: #985d46;
+  background: #f2f3f5;
+  border: 1px solid #d0d1d3;
+  color: #24272d;
 }
 .full {
   width: 100%;
@@ -166,46 +166,46 @@ button:hover {
   width: 29px;
   height: 29px;
   padding: 0;
-  color: #939a91;
+  color: #4b515b;
   border-radius: 5px;
   flex-shrink: 0;
 }
 .icon-btn:hover {
-  background: #edf1e9;
+  background: #ecedef;
   color: var(--green);
 }
 .text-btn {
   display: inline-flex;
   gap: 5px;
   align-items: center;
-  font-size: 11px;
+  font-size: 13px;
   padding: 3px 0;
-  color: #668060;
+  color: #24272d;
 }
 .text-btn:hover {
-  color: #244d35;
+  color: #24272d;
 }
 .pill {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  background: #f1f4ee;
-  border: 1px solid #e9ede4;
-  color: #839078;
+  background: #f0f1f3;
+  border: 1px solid #e8e9eb;
+  color: #4b515b;
   padding: 4px 8px;
   border-radius: 5px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 400;
   vertical-align: middle;
   white-space: nowrap;
 }
 .pill.live {
-  background: #eff6ef;
-  color: #52774d;
+  background: #f0f1f3;
+  color: #24272d;
 }
 .pill.live:before {
   content: "";
-  background: #769d67;
+  background: #7d7e80;
   width: 5px;
   height: 5px;
   border-radius: 50%;
@@ -273,7 +273,7 @@ button:hover {
   width: 29px;
   height: 29px;
   border-radius: 8px;
-  font-size: 11px;
+  font-size: 13px;
 }
 .avatar.amber {
   background: #faf2e2;
@@ -318,29 +318,29 @@ button:hover {
 .brand-symbol {
   display: flex;
   align-items: center;
-  color: #52734e;
+  color: #24272d;
 }
 .brand-word {
   font-family: Georgia, "Times New Roman", serif;
   letter-spacing: -1.6px;
   font-size: 34px;
   line-height: 1.1;
-  color: #29432e;
+  color: #24272d;
 }
 .brand-word > span {
   font-family: Arial, sans-serif;
-  font-size: 9px;
+  font-size: 11px;
   vertical-align: top;
   margin: 5px 0 0 3px;
   display: inline-block;
   letter-spacing: 0;
 }
 .brand-cn {
-  border-left: 1px solid #dce2d4;
+  border-left: 1px solid #dadbdd;
   padding-left: 15px;
   margin-left: 8px;
   letter-spacing: 3px;
-  color: #7d8a73;
+  color: #4b515b;
   font-size: 14px;
 }
 .app-shell {
@@ -372,19 +372,19 @@ button:hover {
   margin: 36px 0 22px;
   padding: 11px 12px;
   background: #fff;
-  border: 1px solid #dce3d6;
+  border: 1px solid #dbdcde;
   border-radius: 7px;
-  box-shadow: 0 2px 3px #283a1c04;
+  box-shadow: 0 2px 3px #292a2c04;
   font-size: 12px;
-  color: #4d6247;
+  color: #24272d;
 }
 .new-btn:hover {
-  background: #eff3e9;
-  border-color: #c9d3bf;
+  background: #edeef0;
+  border-color: #c8c9cb;
 }
 .new-btn > span {
   margin-left: auto;
-  color: #a0ac96;
+  color: #626b78;
   font-size: 15px;
 }
 .sidebar nav {
@@ -397,27 +397,27 @@ button:hover {
   align-items: center;
   gap: 11px;
   text-align: left;
-  color: #828a7c;
+  color: #4b515b;
   font-size: 12px;
   padding: 12px 12px;
   border-radius: 6px;
 }
 .sidebar nav > button.active {
-  background: #eaf0e2;
-  color: #4b6743;
+  background: #e8e9eb;
+  color: #24272d;
   font-weight: 600;
 }
 .sidebar nav > button:hover {
-  background: #eef2e9;
+  background: #edeef0;
 }
 .sidebar nav small {
   margin-left: auto;
-  font-size: 10px;
-  border: 1px solid #dde3d4;
+  font-size: 12px;
+  border: 1px solid #dbdcde;
   border-radius: 4px;
   padding: 0 5px;
   line-height: 16px;
-  color: #8c9781;
+  color: #4b515b;
 }
 .sidebar-section {
   margin-top: 38px;
@@ -425,13 +425,13 @@ button:hover {
 .section-label {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 1px;
-  color: #a0a995;
+  color: #626b78;
   padding: 0 12px 12px;
 }
 .section-label > span {
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0;
 }
 .recent-list {
@@ -442,8 +442,8 @@ button:hover {
   overflow: auto;
 }
 .recent-list > p {
-  color: #b1b7a8;
-  font-size: 11px;
+  color: #626b78;
+  font-size: 13px;
   line-height: 1.9;
   padding: 8px 12px;
 }
@@ -454,8 +454,8 @@ button:hover {
   padding: 10px 12px;
   text-align: left;
   border-radius: 5px;
-  color: #929b87;
-  font-size: 11px;
+  color: #4b515b;
+  font-size: 13px;
 }
 .recent-list > button > span:last-child {
   white-space: nowrap;
@@ -464,25 +464,25 @@ button:hover {
 }
 .recent-list > button:hover,
 .recent-list > button.selected {
-  background: #edf1e6;
-  color: #5a7050;
+  background: #ebecee;
+  color: #24272d;
 }
 .sidebar-bottom {
   margin-top: auto;
   padding-top: 24px;
 }
 .local-tag {
-  font-size: 9px;
-  color: #9ba58f;
+  font-size: 11px;
+  color: #626b78;
   display: flex;
   gap: 6px;
   align-items: center;
   padding: 12px 10px;
-  border-bottom: 1px solid #e7eadf;
+  border-bottom: 1px solid #e4e5e7;
 }
 .local-tag > span:last-child {
   margin-left: auto;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 0.5px;
 }
 .sidebar-bottom > button {
@@ -490,8 +490,8 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 11px;
-  color: #7d8974;
+  font-size: 13px;
+  color: #4b515b;
   width: 100%;
 }
 .sidebar-bottom > button > svg:last-child {
@@ -501,20 +501,20 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 9px;
-  border-top: 1px solid #e8ebdf;
+  border-top: 1px solid #e5e6e8;
   padding: 18px 4px 20px;
 }
 .user-profile > span:first-child {
-  background: #e8eddf;
-  border: 1px solid #dde4d3;
-  color: #8c9d78;
+  background: #e6e7e9;
+  border: 1px solid #dbdcde;
+  color: #4b515b;
   display: flex;
   width: 30px;
   height: 30px;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 11px;
+  font-size: 13px;
 }
 .user-profile > div {
   display: flex;
@@ -522,20 +522,20 @@ button:hover {
   gap: 4px;
 }
 .user-profile b {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
-  color: #69765e;
+  color: #24272d;
 }
 .user-profile small {
-  font-size: 8px;
-  color: #a4ad98;
+  font-size: 10px;
+  color: #626b78;
   letter-spacing: 0.3px;
 }
 .user-profile .profile-badge {
   margin-left: auto;
-  background: #edf1e5;
-  color: #96a286;
-  font-size: 8px;
+  background: #ebecee;
+  color: #4b515b;
+  font-size: 10px;
   border-radius: 3px;
   padding: 2px 4px;
 }
@@ -554,14 +554,14 @@ button:hover {
   display: flex;
   gap: 13px;
   align-items: center;
-  font-size: 11px;
-  color: #b0b7a9;
+  font-size: 13px;
+  color: #626b78;
 }
 .breadcrumb > span {
-  color: #6e7d64;
+  color: #4b515b;
 }
 .breadcrumb > svg {
-  color: #c4cabc;
+  color: #78818d;
 }
 .topbar-actions {
   display: flex;
@@ -569,8 +569,8 @@ button:hover {
   align-items: center;
 }
 .powered {
-  font-size: 8px;
-  color: #a6b29e;
+  font-size: 10px;
+  color: #626b78;
   letter-spacing: 1.4px;
 }
 .studio {
@@ -600,18 +600,18 @@ button:hover {
   overflow-wrap: anywhere;
 }
 .page-heading p {
-  font-size: 11px;
-  color: #9ba393;
+  font-size: 13px;
+  color: #626b78;
   margin-top: 8px;
   line-height: 1.8;
   max-width: 750px;
 }
 .page-heading .eyebrow {
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.8px;
 }
 .export-btn {
-  font-size: 10px;
+  font-size: 12px;
   min-height: 34px;
   padding: 8px 12px;
   align-self: flex-start;
@@ -642,11 +642,11 @@ button:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #92a084;
+  color: #4b515b;
   width: 35px;
   height: 35px;
-  background: #f6f8f2;
-  border: 1px solid #edf0e7;
+  background: #f4f5f7;
+  border: 1px solid #ebecee;
   border-radius: 9px;
   flex-shrink: 0;
 }
@@ -656,8 +656,8 @@ button:hover {
   gap: 7px;
 }
 .overview-grid > div > div > span {
-  font-size: 9px;
-  color: #9ba48f;
+  font-size: 11px;
+  color: #626b78;
 }
 .overview-grid strong {
   font-family: Georgia, serif;
@@ -667,13 +667,13 @@ button:hover {
   align-items: center;
   gap: 9px;
   font-weight: 400;
-  color: #475b3f;
+  color: #24272d;
   white-space: nowrap;
 }
 .overview-grid small {
   font-family: inherit;
-  font-size: 8px;
-  color: #a5af9b;
+  font-size: 10px;
+  color: #626b78;
   font-weight: 400;
   white-space: nowrap;
 }
@@ -688,7 +688,7 @@ button:hover {
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  font-size: 8px;
+  font-size: 10px;
 }
 .discussion-card {
   border: 1px solid var(--line);
@@ -696,7 +696,7 @@ button:hover {
   margin-top: 24px;
   min-height: 515px;
   overflow: hidden;
-  box-shadow: 0 3px 10px #22351a02;
+  box-shadow: 0 3px 10px #25262802;
 }
 .discussion-toolbar {
   height: 54px;
@@ -705,7 +705,7 @@ button:hover {
   justify-content: space-between;
   padding: 0 20px;
   border-bottom: 1px solid var(--line);
-  background: #fdfefb;
+  background: #fcfdff;
 }
 .tabs {
   display: flex;
@@ -715,20 +715,20 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
-  color: #a1aa95;
+  font-size: 13px;
+  color: #626b78;
   position: relative;
   padding: 0 1px;
 }
 .tabs > button > span {
-  font-size: 8px;
-  background: #eaf0e2;
+  font-size: 10px;
+  background: #e8e9eb;
   padding: 2px 5px;
   border-radius: 3px;
-  color: #8b9b7e;
+  color: #4b515b;
 }
 .tabs > button.active {
-  color: #58754c;
+  color: #24272d;
 }
 .tabs > button.active:after {
   content: "";
@@ -737,7 +737,7 @@ button:hover {
   height: 2px;
   left: 0;
   right: 0;
-  background: #779867;
+  background: #7c7d7f;
   border-radius: 3px;
 }
 .toolbar-right {
@@ -745,15 +745,15 @@ button:hover {
   align-items: center;
 }
 .toolbar-right > .muted {
-  font-size: 9px;
-  color: #b1baa7;
+  font-size: 11px;
+  color: #626b78;
 }
 .live-label {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 9px;
-  color: #829870;
+  font-size: 11px;
+  color: #4b515b;
 }
 .live-label .status-dot {
   animation: pulse 1.5s infinite;
@@ -768,8 +768,8 @@ button:hover {
   text-align: center;
   position: relative;
   background:
-    radial-gradient(ellipse at 50% 33%, #f8faf400, white 75%),
-    radial-gradient(ellipse at 50% 16%, #f4f7efaa, white 48%);
+    radial-gradient(ellipse at 50% 33%, #f6f7f900, white 75%),
+    radial-gradient(ellipse at 50% 16%, #f2f3f5aa, white 48%);
 }
 .empty-art {
   width: 240px;
@@ -786,7 +786,7 @@ button:hover {
   top: 42px;
   left: 20px;
   right: 20px;
-  border-top: 1px dashed #d9e1ce;
+  border-top: 1px dashed #d7d8da;
   z-index: 0;
 }
 .mini-bubble {
@@ -833,27 +833,27 @@ button:hover {
   transform: rotate(10deg);
 }
 .empty-state .eyebrow {
-  font-size: 7px;
+  font-size: 9px;
   letter-spacing: 1.5px;
-  color: #a2ae95;
+  color: #626b78;
 }
 .empty-state h2 {
   font-size: 27px;
   line-height: 1.7;
   font-weight: 500;
   letter-spacing: 0.5px;
-  color: #43543b;
+  color: #24272d;
   margin-top: 12px;
 }
 .empty-state > p {
-  font-size: 10px;
+  font-size: 12px;
   line-height: 2.1;
-  color: #a3ad97;
+  color: #626b78;
   margin-top: 12px;
 }
 .empty-state .primary {
   margin-top: 22px;
-  font-size: 11px;
+  font-size: 13px;
   min-width: 170px;
   min-height: 38px;
   padding: 10px 15px;
@@ -863,20 +863,20 @@ button:hover {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  color: #96a18b;
-  font-size: 10px;
+  color: #626b78;
+  font-size: 12px;
   padding: 13px 0;
 }
 .demo-link:hover {
-  color: #567447;
+  color: #24272d;
 }
 .process-strip {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 15px;
-  color: #c0c8b7;
-  font-size: 8px;
+  color: #626b78;
+  font-size: 10px;
   margin-top: 23px;
 }
 .process-strip > span {
@@ -885,27 +885,27 @@ button:hover {
   gap: 6px;
 }
 .process-strip b {
-  border: 1px solid #e4e9dc;
+  border: 1px solid #e2e3e5;
   width: 17px;
   height: 17px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  font-size: 7px;
+  font-size: 9px;
   font-weight: 400;
-  color: #b1bfa1;
+  color: #626b78;
 }
 .process-strip svg {
-  color: #d0d8c6;
+  color: #78818d;
 }
 .workspace-foot {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 15px;
-  color: #b2bba7;
-  font-size: 8px;
+  color: #626b78;
+  font-size: 10px;
   padding: 18px 0 24px;
 }
 .workspace-foot > span:first-child {
@@ -921,7 +921,7 @@ button:hover {
   flex-shrink: 0;
   border-left: 1px solid var(--line);
   padding: 29px 22px 18px;
-  background: #fdfefb;
+  background: #fcfdff;
   display: flex;
   flex-direction: column;
 }
@@ -934,12 +934,12 @@ button:hover {
 .inspector-title > h3 {
   font-weight: 500;
   font-size: 13px;
-  color: #5d7151;
+  color: #24272d;
 }
 .inspector-title > span {
-  font-size: 7px;
+  font-size: 9px;
   letter-spacing: 1.5px;
-  color: #b3bca9;
+  color: #626b78;
 }
 .inspector section {
   padding-bottom: 23px;
@@ -953,38 +953,38 @@ button:hover {
   margin-bottom: 14px;
 }
 .section-head h4 {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 500;
-  color: #6a7b5d;
+  color: #24272d;
   display: flex;
   align-items: center;
   gap: 7px;
 }
 .section-head > span {
-  font-size: 9px;
-  color: #b6bfa9;
+  font-size: 11px;
+  color: #626b78;
 }
 .section-head .text-btn {
-  font-size: 9px;
-  color: #96a88a;
+  font-size: 11px;
+  color: #626b78;
 }
 .count-badge {
-  background: #f0f4e9;
-  color: #9caa8d;
-  font-size: 8px;
+  background: #eeeff1;
+  color: #626b78;
+  font-size: 10px;
   padding: 2px 5px;
   border-radius: 4px;
   font-weight: 400;
 }
 .dropzone {
-  border: 1px dashed #dce4d2;
+  border: 1px dashed #dadbdd;
   border-radius: 7px;
-  background: #f8faf5;
+  background: #f7f8fa;
   margin-bottom: 9px;
 }
 .dropzone.drag {
-  border-color: #6b9562;
-  background: #ecf3e4;
+  border-color: #757678;
+  background: #ebecee;
 }
 .dropzone > button {
   display: flex;
@@ -993,38 +993,38 @@ button:hover {
   justify-content: center;
   width: 100%;
   padding: 19px 8px 14px;
-  color: #9cac8d;
+  color: #626b78;
 }
 .dropzone strong {
-  font-size: 10px;
-  color: #899a77;
+  font-size: 12px;
+  color: #4b515b;
   font-weight: 400;
   margin: 11px 0 7px;
 }
 .dropzone span {
-  font-size: 7px;
-  color: #b1bca6;
+  font-size: 9px;
+  color: #626b78;
   white-space: nowrap;
 }
 .dropzone small {
-  font-size: 7px;
-  color: #c0c8b7;
+  font-size: 9px;
+  color: #626b78;
   margin-top: 6px;
 }
 .choose-doc {
-  font-size: 9px;
+  font-size: 11px;
   padding: 7px 5px;
-  color: #8a9b79;
-  border-color: #e7ecdf;
+  color: #4b515b;
+  border-color: #e5e6e8;
   margin-top: 7px;
-  background: #fcfdf9;
+  background: #fafbfd;
 }
 .file-item {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 0;
-  border-bottom: 1px solid #f0f3ea;
+  border-bottom: 1px solid #eeeff1;
 }
 .file-item > button:not(.icon-btn) {
   display: flex;
@@ -1037,22 +1037,22 @@ button:hover {
 }
 .file-item b {
   font-weight: 400;
-  font-size: 10px;
+  font-size: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 180px;
 }
 .file-item small {
-  font-size: 8px;
-  color: #acb69f;
+  font-size: 10px;
+  color: #626b78;
 }
 .file-icon {
   width: 29px;
   height: 34px;
-  border: 1px solid #e9eedd;
-  color: #99aa80;
-  background: #f7f9f0;
+  border: 1px solid #e6e7e9;
+  color: #626b78;
+  background: #f4f5f7;
   border-radius: 5px;
   display: flex;
   align-items: center;
@@ -1074,13 +1074,13 @@ button:hover {
   flex: 1;
 }
 .team-item b {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
-  color: #637558;
+  color: #24272d;
 }
 .team-item p {
-  font-size: 8px;
-  color: #abb69f;
+  font-size: 10px;
+  color: #626b78;
   margin-top: 4px;
   white-space: nowrap;
   overflow: hidden;
@@ -1088,9 +1088,9 @@ button:hover {
 }
 .team-item small {
   display: inline-block;
-  font-size: 7px;
-  color: #b2bdab;
-  border: 1px solid #ecf0e7;
+  font-size: 9px;
+  color: #626b78;
+  border: 1px solid #ebecee;
   border-radius: 3px;
   padding: 2px 4px;
   letter-spacing: 0.1px;
@@ -1113,18 +1113,18 @@ button:hover {
   justify-content: center;
   gap: 5px;
   margin-top: 17px;
-  font-size: 8px;
-  color: #9caa8c;
+  font-size: 10px;
+  color: #626b78;
   padding: 7px;
-  background: #f4f7ee;
+  background: #f2f3f5;
   border-radius: 4px;
 }
 .goal-input {
-  font-size: 10px;
-  color: #96a487;
+  font-size: 12px;
+  color: #626b78;
   padding: 10px 11px;
-  background: #fafcf7;
-  border-color: #e7eddf;
+  background: #f9fafc;
+  border-color: #e5e6e8;
   line-height: 1.9;
   resize: vertical;
 }
@@ -1136,14 +1136,14 @@ button:hover {
   align-items: center;
   justify-content: space-between;
   margin-top: 17px;
-  font-size: 10px;
-  color: #8e9f80;
+  font-size: 12px;
+  color: #4b515b;
 }
 .stepper {
   display: flex;
   align-items: center;
   gap: 9px;
-  border: 1px solid #e3e9d9;
+  border: 1px solid #e1e2e4;
   border-radius: 5px;
   padding: 1px;
   background: #fff;
@@ -1151,14 +1151,14 @@ button:hover {
 .stepper .icon-btn {
   height: 22px;
   width: 22px;
-  color: #a2b08f;
+  color: #626b78;
 }
 .stepper b {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 400;
   min-width: 10px;
   text-align: center;
-  color: #758d62;
+  color: #4b515b;
 }
 .thinking-setting {
   display: flex;
@@ -1166,8 +1166,8 @@ button:hover {
   justify-content: space-between;
   margin-top: 19px;
   position: relative;
-  font-size: 10px;
-  color: #8e9f80;
+  font-size: 12px;
+  color: #4b515b;
   cursor: pointer;
 }
 .thinking-setting > div {
@@ -1176,8 +1176,8 @@ button:hover {
   gap: 5px;
 }
 .thinking-setting small {
-  font-size: 8px;
-  color: #b5bfaa;
+  font-size: 10px;
+  color: #626b78;
 }
 .thinking-setting > input {
   position: absolute;
@@ -1188,8 +1188,8 @@ button:hover {
   cursor: pointer;
 }
 .thinking-setting .switch {
-  background: #e6ecdf;
-  border: 1px solid #dfe5d7;
+  background: #e5e6e8;
+  border: 1px solid #dddee0;
   width: 29px;
   height: 16px;
   border-radius: 20px;
@@ -1207,23 +1207,23 @@ button:hover {
   position: absolute;
   top: 2px;
   left: 2px;
-  box-shadow: 0 1px 2px #667d581c;
+  box-shadow: 0 1px 2px #68696b1c;
   transition: transform 0.2s;
 }
 .thinking-setting > input:checked + .switch {
-  background: #6e8e5f;
-  border-color: #6e8e5f;
+  background: #737476;
+  border-color: #737476;
 }
 .thinking-setting > input:checked + .switch:after {
   transform: translateX(12px);
 }
 .thinking-setting > input:focus-visible + .switch {
-  outline: 2px solid #719c83;
+  outline: 2px solid #848587;
   outline-offset: 3px;
 }
 .call-estimate {
-  font-size: 8px;
-  color: #b4bfa8;
+  font-size: 10px;
+  color: #626b78;
   line-height: 1.8;
   margin-top: 19px;
 }
@@ -1232,7 +1232,7 @@ button:hover {
   padding-top: 2px;
 }
 .inspector-footer .primary {
-  font-size: 11px;
+  font-size: 13px;
   padding: 11px;
   min-height: 39px;
   justify-content: space-between;
@@ -1242,8 +1242,8 @@ button:hover {
 }
 .inspector-footer > p {
   text-align: center;
-  font-size: 8px;
-  color: #bac3af;
+  font-size: 10px;
+  color: #626b78;
   margin-top: 11px;
 }
 .message-filter {
@@ -1251,33 +1251,33 @@ button:hover {
   align-items: center;
   gap: 7px;
   padding: 13px 20px;
-  border-bottom: 1px solid #f0f3ea;
+  border-bottom: 1px solid #eeeff1;
   background: #fff;
   flex-wrap: wrap;
 }
 .message-filter > span {
-  font-size: 9px;
-  color: #a6b097;
+  font-size: 11px;
+  color: #626b78;
   margin-right: 5px;
 }
 .message-filter > button {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 9px;
-  color: #9aaa8b;
+  font-size: 11px;
+  color: #626b78;
   padding: 4px 7px;
   border-radius: 4px;
   border: 1px solid transparent;
 }
 .message-filter > button.active {
-  background: #f2f6ea;
-  border-color: #e4ecd8;
-  color: #70895c;
+  background: #f0f1f3;
+  border-color: #e2e3e5;
+  color: #4b515b;
 }
 .message-filter > .follow-btn {
   margin-left: auto;
-  font-size: 8px;
+  font-size: 10px;
 }
 .messages {
   padding: 0 22px;
@@ -1290,14 +1290,14 @@ button:hover {
   display: flex;
   gap: 13px;
   align-items: center;
-  color: #a5b397;
+  color: #626b78;
   margin: 24px 0 18px;
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1px;
 }
 .round-divider > i {
   flex: 1;
-  border-top: 1px solid #edf1e5;
+  border-top: 1px solid #ebecee;
 }
 .message {
   display: flex;
@@ -1307,7 +1307,7 @@ button:hover {
 .message > .avatar {
   width: 31px;
   height: 31px;
-  font-size: 11px;
+  font-size: 13px;
   border-radius: 8px;
 }
 .message-body {
@@ -1322,34 +1322,34 @@ button:hover {
   margin-bottom: 9px;
 }
 .message-head > strong {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  color: #607050;
+  color: #24272d;
 }
 .message-head > span {
-  font-size: 8px;
-  color: #a6b398;
+  font-size: 10px;
+  color: #626b78;
 }
 .message-head .writing {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 8px;
-  color: #93ab7b;
+  font-size: 10px;
+  color: #4b515b;
 }
 .copy-btn {
   margin-left: auto;
   padding: 3px;
-  color: #b8c2ac;
+  color: #626b78;
   opacity: 0.5;
 }
 .message:hover .copy-btn {
   opacity: 1;
 }
 .markdown {
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.95;
-  color: #7e8c73;
+  color: #4b515b;
   overflow-wrap: anywhere;
 }
 .markdown p {
@@ -1359,7 +1359,7 @@ button:hover {
   margin-bottom: 0;
 }
 .markdown strong {
-  color: #5b724a;
+  color: #24272d;
   font-weight: 600;
 }
 .markdown h1,
@@ -1367,7 +1367,7 @@ button:hover {
 .markdown h3,
 .markdown h4 {
   font-weight: 600;
-  color: #617b4c;
+  color: #24272d;
   margin: 18px 0 9px;
   line-height: 1.5;
 }
@@ -1398,11 +1398,11 @@ button:hover {
   margin-bottom: 6px;
 }
 .markdown blockquote {
-  border-left: 2px solid #ceddbc;
+  border-left: 2px solid #cccdcf;
   margin: 12px 0;
   padding: 5px 12px;
-  background: #f7f9f2;
-  color: #95a783;
+  background: #f5f6f8;
+  color: #626b78;
 }
 .markdown table {
   border-collapse: collapse;
@@ -1410,56 +1410,56 @@ button:hover {
   margin: 13px 0;
   display: block;
   overflow: auto;
-  font-size: 10px;
+  font-size: 12px;
 }
 .markdown th,
 .markdown td {
-  border: 1px solid #e6ecdd;
+  border: 1px solid #e4e5e7;
   padding: 8px 11px;
   text-align: left;
 }
 .markdown th {
-  background: #f6f8f0;
-  color: #7a9067;
+  background: #f4f5f7;
+  color: #4b515b;
   font-weight: 500;
 }
 .markdown code {
   font-family: Consolas, monospace;
-  font-size: 10px;
-  background: #f3f6ed;
+  font-size: 12px;
+  background: #f1f2f4;
   padding: 2px 4px;
   border-radius: 3px;
 }
 .markdown pre {
   padding: 12px;
-  background: #f5f7ef;
+  background: #f3f4f6;
   overflow: auto;
 }
 .markdown pre code {
   padding: 0;
   white-space: pre;
-  font-size: 10px;
+  font-size: 12px;
 }
 .markdown a {
-  color: #628050;
+  color: #24272d;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 .citation {
   display: inline-block;
-  border: 1px solid #e2e9d8;
-  background: #f4f7ed;
-  color: #7c9566;
+  border: 1px solid #e0e1e3;
+  background: #f2f3f5;
+  color: #4b515b;
   padding: 0 4px;
   border-radius: 3px;
-  font-size: 8px;
+  font-size: 10px;
   font-family: Consolas, monospace;
   line-height: 1.8;
   margin: 0 2px;
 }
 .citation:hover {
-  background: #eaf2de;
-  color: #587b3a;
+  background: #e8e9eb;
+  color: #24272d;
 }
 .thinking-dots {
   display: flex;
@@ -1471,7 +1471,7 @@ button:hover {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #abbc98;
+  background: #a9aaac;
   animation: pulse 1.2s infinite;
 }
 .thinking-dots i:nth-child(2) {
@@ -1481,20 +1481,20 @@ button:hover {
   animation-delay: 0.4s;
 }
 .thinking-dots > span {
-  font-size: 9px;
+  font-size: 11px;
   margin-left: 6px;
-  color: #acb99d;
+  color: #626b78;
 }
 .message-note {
-  font-size: 9px;
-  color: #b19362;
-  border-top: 1px solid #f0e8d9;
+  font-size: 11px;
+  color: #4b515b;
+  border-top: 1px solid #e5e6e8;
   margin-top: 12px;
   padding-top: 6px;
 }
 .summary-message .message-body {
-  background: #fafcf6;
-  border: 1px solid #e8eedf;
+  background: #f8f9fb;
+  border: 1px solid #e6e7e9;
   padding: 13px 15px;
   border-radius: 7px;
 }
@@ -1502,15 +1502,15 @@ button:hover {
   margin-top: -4px;
 }
 .discussion-end {
-  font-size: 8px;
-  color: #a8b698;
+  font-size: 10px;
+  color: #626b78;
   display: flex;
   justify-content: center;
   gap: 9px;
   align-items: center;
-  border-top: 1px solid #eef3e6;
+  border-top: 1px solid #ecedef;
   padding: 14px;
-  background: #fdfefb;
+  background: #fcfdff;
 }
 .demo-banner,
 .error-banner {
@@ -1519,10 +1519,10 @@ button:hover {
   gap: 8px;
   padding: 11px 13px;
   border-radius: 6px;
-  background: #f5f7ee;
-  border: 1px solid #e4ebd8;
-  color: #8ba171;
-  font-size: 10px;
+  background: #f2f3f5;
+  border: 1px solid #e1e2e4;
+  color: #4b515b;
+  font-size: 12px;
   margin-top: 18px;
   line-height: 1.7;
 }
@@ -1530,14 +1530,14 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 9px;
+  font-size: 11px;
   margin-left: auto;
-  color: #80995f;
+  color: #4b515b;
 }
 .error-banner {
-  background: #fdf5ef;
-  border-color: #efdfce;
-  color: #ac8055;
+  background: #f5f6f8;
+  border-color: #dedfe1;
+  color: #4b515b;
 }
 .error-banner > .icon-btn {
   margin-left: auto;
@@ -1549,19 +1549,19 @@ button:hover {
   justify-content: center;
   flex-direction: column;
   padding: 45px;
-  color: #b1c09e;
+  color: #626b78;
   text-align: center;
 }
 .report-empty h3 {
   font-size: 16px;
   font-weight: 400;
-  color: #829b6a;
+  color: #4b515b;
   margin: 17px 0 10px;
 }
 .report-empty p {
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.9;
-  color: #a3b38f;
+  color: #626b78;
 }
 .report-empty .text-btn {
   margin-top: 16px;
@@ -1580,13 +1580,13 @@ button:hover {
   position: absolute;
   left: 12px;
   top: 11px;
-  color: #a5b296;
+  color: #626b78;
 }
 .search-field > input {
   padding: 10px 12px 10px 36px;
-  font-size: 11px;
-  border-color: #e6ecdf;
-  background: #fcfdf9;
+  font-size: 13px;
+  border-color: #e5e6e8;
+  background: #fafbfd;
 }
 .library-table {
   border: 1px solid var(--line);
@@ -1600,26 +1600,26 @@ button:hover {
   align-items: center;
   gap: 18px;
   padding: 12px 23px;
-  font-size: 11px;
-  color: #9caa8c;
+  font-size: 13px;
+  color: #626b78;
 }
 .table-head {
-  font-size: 9px;
-  background: #f9fbf5;
+  font-size: 11px;
+  background: #f7f8fa;
   border-bottom: 1px solid var(--line);
   padding-top: 16px;
   padding-bottom: 16px;
-  color: #9aaa89;
+  color: #626b78;
 }
 .table-row {
   min-height: 75px;
-  border-bottom: 1px solid #edf2e5;
+  border-bottom: 1px solid #ebecee;
 }
 .table-row:last-child {
   border-bottom: 0;
 }
 .table-row > span {
-  font-size: 10px;
+  font-size: 12px;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1631,19 +1631,19 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 11px;
-  color: #788b63;
+  font-size: 13px;
+  color: #4b515b;
   min-width: 0;
   overflow-wrap: anywhere;
   text-align: left;
 }
 .table-row:hover {
-  background: #fcfdf9;
+  background: #fafbfd;
 }
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: #23301f38;
+  background: #25262838;
   backdrop-filter: blur(4px);
   z-index: 50;
   display: flex;
@@ -1653,12 +1653,12 @@ button:hover {
 }
 .modal {
   background: #fff;
-  border: 1px solid #edf1e5;
+  border: 1px solid #ebecee;
   border-radius: 13px;
   width: 530px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 30px 120px #1b311c25;
+  box-shadow: 0 30px 120px #22232525;
   outline: none;
 }
 .modal.wide {
@@ -1679,11 +1679,11 @@ button:hover {
 .modal > header h2 {
   font-size: 18px;
   font-weight: 500;
-  color: #5c744b;
+  color: #24272d;
 }
 .modal > header p {
-  font-size: 11px;
-  color: #a2b28f;
+  font-size: 13px;
+  color: #626b78;
   margin-top: 8px;
   line-height: 1.7;
 }
@@ -1718,13 +1718,13 @@ button:hover {
   align-items: flex-start;
   gap: 17px;
   min-height: 25px;
-  font-size: 11px;
+  font-size: 13px;
   line-height: 1.9;
   padding: 2px 23px;
 }
 .source-code > div > span {
-  color: #bcc5ae;
-  font-size: 9px;
+  color: #626b78;
+  font-size: 11px;
   width: 38px;
   text-align: right;
   flex-shrink: 0;
@@ -1733,12 +1733,12 @@ button:hover {
 .source-code p {
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  color: #7b8e68;
+  color: #4b515b;
   min-width: 0;
 }
 .source-code .highlight {
-  background: #f3f0db;
-  border-left: 3px solid #c0ad62;
+  background: #e9eaec;
+  border-left: 3px solid #999a9c;
   padding-left: 20px;
 }
 .toast {
@@ -1747,10 +1747,10 @@ button:hover {
   left: 50%;
   transform: translateX(-50%);
   background: #fff;
-  border: 1px solid #dce7d1;
+  border: 1px solid #dbdcde;
   border-radius: 9px;
-  box-shadow: 0 8px 40px #344b2120;
-  color: #708b57;
+  box-shadow: 0 8px 40px #34353720;
+  color: #4b515b;
   padding: 14px 21px;
   display: flex;
   align-items: center;
@@ -1767,17 +1767,17 @@ button:hover {
   justify-content: center;
   flex-direction: column;
   gap: 22px;
-  background: #fafcf7;
-  color: #94a780;
+  background: #f9fafc;
+  color: #4b515b;
 }
 .loading-screen > p {
   font-size: 12px;
-  color: #a1b28d;
+  color: #626b78;
 }
 .loading-screen > h2 {
   font-size: 21px;
   font-weight: 400;
-  color: #6f8856;
+  color: #4b515b;
 }
 .onboarding {
   min-height: 100vh;
@@ -1785,8 +1785,8 @@ button:hover {
   grid-template-columns: minmax(420px, 0.9fr) minmax(550px, 1.1fr);
 }
 .onboarding > aside {
-  background: #f3f6ed;
-  border-right: 1px solid #e3e9d8;
+  background: #f1f2f4;
+  border-right: 1px solid #e0e1e3;
   padding: 40px 50px;
   display: flex;
   flex-direction: column;
@@ -1802,33 +1802,33 @@ button:hover {
   padding-top: 8vh;
 }
 .onboard-intro > .eyebrow {
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.8px;
-  color: #9ead8d;
+  color: #626b78;
 }
 .onboard-intro > h1 {
   font-size: clamp(36px, 3.6vw, 56px);
   line-height: 1.55;
   letter-spacing: -1px;
   font-weight: 400;
-  color: #526843;
+  color: #24272d;
   margin-top: 23px;
 }
 .onboard-intro em {
   font-style: normal;
-  color: #90a674;
+  color: #4b515b;
 }
 .onboard-intro > p {
   font-size: 12px;
-  color: #a0af8f;
+  color: #626b78;
   line-height: 2.1;
   margin-top: 23px;
 }
 .onboard-foot {
   margin-top: auto;
-  font-size: 7px;
+  font-size: 9px;
   letter-spacing: 1.6px;
-  color: #afbd9e;
+  color: #626b78;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1836,7 +1836,7 @@ button:hover {
   padding-top: 15px;
 }
 .onboard-foot > span {
-  font-size: 9px;
+  font-size: 11px;
   letter-spacing: 0.5px;
 }
 .orbit-art {
@@ -1852,7 +1852,7 @@ button:hover {
   position: absolute;
   width: 220px;
   height: 130px;
-  border: 1px solid #d9e3cb;
+  border: 1px solid #d7d8da;
   border-radius: 50%;
   top: 38px;
   left: 39px;
@@ -1876,10 +1876,10 @@ button:hover {
   width: 52px;
   height: 52px;
   border-radius: 15px;
-  background: #ecf2e3;
-  border: 1px solid #dfe9d0;
-  color: #92ac74;
-  box-shadow: 0 6px 15px #334c1f05;
+  background: #eaebed;
+  border: 1px solid #dcdddf;
+  color: #4b515b;
+  box-shadow: 0 6px 15px #34353705;
 }
 .orbit-node {
   position: absolute;
@@ -1922,8 +1922,8 @@ button:hover {
 .wizard-progress {
   display: flex;
   gap: 35px;
-  font-size: 10px;
-  color: #b4c0a4;
+  font-size: 12px;
+  color: #626b78;
   margin: 5px 0 65px;
 }
 .wizard-progress > span {
@@ -1932,20 +1932,20 @@ button:hover {
   gap: 7px;
 }
 .wizard-progress > span.current {
-  color: #6b8752;
+  color: #24272d;
 }
 .wizard-progress i {
   width: 16px;
   height: 1px;
-  background: #c8d5b7;
+  background: #c6c7c9;
 }
 .wizard-step {
   max-width: 510px;
   margin: 0 auto;
 }
 .wizard-step > .eyebrow {
-  font-size: 8px;
-  color: #a4b393;
+  font-size: 10px;
+  color: #626b78;
   letter-spacing: 1.8px;
 }
 .wizard-step > h2 {
@@ -1953,12 +1953,12 @@ button:hover {
   line-height: 1.6;
   font-weight: 400;
   letter-spacing: -0.4px;
-  color: #4e6740;
+  color: #24272d;
   margin-top: 13px;
 }
 .wizard-step > .muted {
-  font-size: 11px;
-  color: #9ead8e;
+  font-size: 13px;
+  color: #626b78;
   margin-top: 14px;
   line-height: 2.1;
 }
@@ -1969,7 +1969,7 @@ button:hover {
   margin: 32px 0 24px;
 }
 .number-grid > button {
-  border: 1px solid #e2e9d8;
+  border: 1px solid #e0e1e3;
   border-radius: 9px;
   padding: 17px 5px 15px;
   display: flex;
@@ -1978,7 +1978,7 @@ button:hover {
   flex-direction: column;
   gap: 8px;
   position: relative;
-  color: #acba9a;
+  color: #626b78;
   min-height: 91px;
 }
 .number-grid b {
@@ -1988,7 +1988,7 @@ button:hover {
   line-height: 1;
 }
 .number-grid > button > span {
-  font-size: 8px;
+  font-size: 10px;
 }
 .number-grid > button > svg {
   position: absolute;
@@ -1996,39 +1996,39 @@ button:hover {
   top: 8px;
 }
 .number-grid > button.selected {
-  border-color: #8aa36f;
-  background: #f3f7ec;
-  color: #718f54;
-  box-shadow: 0 0 0 2px #8aa36f0a;
+  border-color: #88898b;
+  background: #f1f2f4;
+  color: #4b515b;
+  box-shadow: 0 0 0 2px #88898b0a;
 }
 .number-grid > button:hover {
-  background: #f7f9f2;
-  border-color: #b3c59c;
+  background: #f5f6f8;
+  border-color: #b0b1b3;
 }
 .setup-note {
   display: flex;
   align-items: flex-start;
   gap: 11px;
-  background: #f8faf3;
-  border: 1px solid #e8eedf;
+  background: #f6f7f9;
+  border: 1px solid #e6e7e9;
   border-radius: 7px;
   padding: 15px;
-  color: #9aad85;
+  color: #626b78;
   line-height: 1.8;
   margin: 20px 0 24px;
-  font-size: 11px;
+  font-size: 13px;
 }
 .setup-note svg {
   margin-top: 2px;
 }
 .setup-note b {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
-  color: #8ba371;
+  color: #4b515b;
 }
 .setup-note p {
-  font-size: 9px;
-  color: #b0bd9f;
+  font-size: 11px;
+  color: #626b78;
   margin-top: 4px;
   line-height: 1.8;
 }
@@ -2041,7 +2041,7 @@ button:hover {
 }
 .wizard-step > .demo-link {
   width: 100%;
-  font-size: 10px;
+  font-size: 12px;
   margin-top: 4px;
 }
 .wizard-step.step-two {
@@ -2062,13 +2062,13 @@ button:hover {
   margin: 27px 0 15px;
 }
 .config-number strong {
-  font-size: 11px;
-  color: #819968;
+  font-size: 13px;
+  color: #4b515b;
   font-weight: 500;
 }
 .config-number p {
-  font-size: 9px;
-  color: #afbc9d;
+  font-size: 11px;
+  color: #626b78;
   line-height: 1.8;
   margin-top: 5px;
 }
@@ -2082,7 +2082,7 @@ button:hover {
   gap: 14px;
 }
 .agent-form {
-  border: 1px solid #e4ebd9;
+  border: 1px solid #e2e3e5;
   border-radius: 8px;
   padding: 17px;
   background: #fff;
@@ -2096,23 +2096,23 @@ button:hover {
 .agent-form-top > .avatar {
   width: 27px;
   height: 27px;
-  font-size: 10px;
+  font-size: 12px;
   border-radius: 7px;
 }
 .agent-form-top > span:not(.avatar) {
-  font-size: 8px;
+  font-size: 10px;
   letter-spacing: 1.4px;
-  color: #b3bea3;
+  color: #626b78;
 }
 .agent-form-top > .text-btn {
   margin-left: auto;
-  font-size: 8px;
-  color: #a0b18b;
+  font-size: 10px;
+  color: #626b78;
 }
 .agent-form label {
   display: block;
-  font-size: 9px;
-  color: #9eaf88;
+  font-size: 11px;
+  color: #626b78;
   line-height: 1.8;
   margin: 12px 0 0;
 }
@@ -2129,16 +2129,16 @@ button:hover {
 .agent-form textarea,
 .agent-form select {
   margin-top: 6px;
-  font-size: 11px;
+  font-size: 13px;
   padding: 8px 10px;
-  border-color: #e4eadc;
+  border-color: #e2e3e5;
   line-height: 1.7;
-  color: #82996a;
+  color: #4b515b;
   border-radius: 5px;
 }
 .agent-form textarea {
-  font-size: 10px;
-  color: #a5b492;
+  font-size: 12px;
+  color: #626b78;
   resize: vertical;
   min-height: 53px;
 }
@@ -2149,13 +2149,13 @@ button:hover {
   position: absolute;
   top: 17px;
   left: 11px;
-  color: #b0bf9e;
+  color: #626b78;
 }
 .key-field > input {
   padding-left: 33px;
   font-family: Consolas, "Segoe UI", monospace;
-  font-size: 10px;
-  color: #8c9f77;
+  font-size: 12px;
+  color: #4b515b;
 }
 .config-extras {
   margin-top: 20px;
@@ -2165,8 +2165,8 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 9px;
-  color: #a1b18c;
+  font-size: 11px;
+  color: #626b78;
   cursor: pointer;
 }
 .checkbox input {
@@ -2174,16 +2174,16 @@ button:hover {
   height: 12px;
   padding: 0;
   margin: 0;
-  accent-color: #698750;
+  accent-color: #6a6b6d;
 }
 .config-extras details {
   margin-top: 20px;
-  border-top: 1px solid #edf2e5;
+  border-top: 1px solid #ebecee;
   padding-top: 13px;
 }
 .config-extras summary {
-  font-size: 10px;
-  color: #9cb087;
+  font-size: 12px;
+  color: #626b78;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -2192,17 +2192,17 @@ button:hover {
 }
 .config-extras details > input {
   margin-top: 15px;
-  font-size: 10px;
+  font-size: 12px;
 }
 .config-extras details > p {
-  font-size: 9px;
-  color: #b0bc9f;
+  font-size: 11px;
+  color: #626b78;
   line-height: 1.8;
   margin-top: 10px;
 }
 .privacy-note {
-  font-size: 8px;
-  color: #b6c2a7;
+  font-size: 10px;
+  color: #626b78;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2231,7 +2231,7 @@ button:hover {
   height: 5px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #dde4d3;
+  background: #dbdcde;
   border-radius: 10px;
 }
 ::-webkit-scrollbar-track {
@@ -2267,7 +2267,7 @@ button:hover {
     padding: 0 24px;
   }
   .overview-grid small {
-    font-size: 9px;
+    font-size: 11px;
   }
   .overview-grid strong {
     font-size: 23px;
@@ -2276,7 +2276,7 @@ button:hover {
     font-size: 31px;
   }
   .empty-state > p {
-    font-size: 11px;
+    font-size: 13px;
   }
   .messages {
     max-height: 68vh;
@@ -2323,7 +2323,7 @@ button:hover {
     grid-template-columns: repeat(3, 1fr);
   }
   .overview-grid > div > div > span {
-    font-size: 8px;
+    font-size: 10px;
   }
   .overview-icon {
     width: 29px;
@@ -2334,7 +2334,7 @@ button:hover {
     font-size: 26px;
   }
   .empty-state > p {
-    font-size: 9px;
+    font-size: 11px;
   }
   .toolbar-right > .muted {
     display: none;
@@ -2383,7 +2383,7 @@ button:hover {
     font-size: 21px;
   }
   .page-heading .eyebrow {
-    font-size: 7px;
+    font-size: 9px;
     letter-spacing: 1.1px;
   }
   .overview-grid {
@@ -2400,24 +2400,24 @@ button:hover {
     display: none;
   }
   .overview-grid > div > div > span {
-    font-size: 8px;
+    font-size: 10px;
   }
   .overview-grid > div {
     justify-content: center;
   }
   .export-btn {
     padding: 7px 9px;
-    font-size: 9px;
+    font-size: 11px;
   }
   .empty-state .eyebrow {
-    font-size: 6px;
+    font-size: 8px;
     letter-spacing: 0.7px;
   }
   .empty-state h2 {
     font-size: 22px;
   }
   .empty-state > p {
-    font-size: 9px;
+    font-size: 11px;
   }
   .empty-state {
     padding-left: 12px;
@@ -2425,10 +2425,10 @@ button:hover {
   }
   .process-strip {
     gap: 8px;
-    font-size: 7px;
+    font-size: 9px;
   }
   .process-strip b {
-    font-size: 6px;
+    font-size: 8px;
   }
   .workspace-foot > span:last-child {
     display: none;
@@ -2440,7 +2440,7 @@ button:hover {
     gap: 18px;
   }
   .tabs > button {
-    font-size: 10px;
+    font-size: 12px;
   }
   .powered {
     display: none;
@@ -2458,11 +2458,11 @@ button:hover {
     padding: 40px 30px;
   }
   .onboard-foot {
-    font-size: 6px;
+    font-size: 8px;
     letter-spacing: 0.8px;
   }
   .onboard-foot > span {
-    font-size: 8px;
+    font-size: 10px;
   }
   .number-grid {
     gap: 9px;
@@ -2484,7 +2484,7 @@ button:hover {
     padding: 0 14px;
   }
   .markdown {
-    font-size: 10px;
+    font-size: 12px;
   }
   .message {
     gap: 8px;
@@ -2498,7 +2498,7 @@ button:hover {
     height: 27px;
   }
   .message-head > strong {
-    font-size: 10px;
+    font-size: 12px;
   }
 }
 @media (max-width: 800px) {
@@ -2570,7 +2570,7 @@ button:hover {
     font-size: 21px;
   }
   .page-heading > p {
-    font-size: 10px;
+    font-size: 12px;
   }
   .onboarding {
     display: block;
@@ -2579,7 +2579,7 @@ button:hover {
     height: auto;
     position: relative;
     padding: 25px 30px;
-    background: #f7f9f2;
+    background: #f5f6f8;
     overflow: visible;
   }
   .onboard-intro,
@@ -2618,10 +2618,10 @@ button:hover {
     font-size: 22px;
   }
   .library-page .page-heading .eyebrow {
-    font-size: 7px;
+    font-size: 9px;
   }
   .overview-grid > div > div > span {
-    font-size: 7px;
+    font-size: 9px;
   }
   .export-btn {
     min-height: 30px;
@@ -2641,7 +2641,7 @@ button:hover {
     font-size: 21px;
   }
   .empty-state .eyebrow {
-    font-size: 5px;
+    font-size: 8px;
   }
   .process-strip {
     gap: 5px;
@@ -2681,7 +2681,7 @@ button:hover {
     font-size: 23px;
   }
   .page-heading p {
-    font-size: 10px;
+    font-size: 12px;
   }
   .overview-grid {
     padding: 15px 0;
@@ -2691,7 +2691,7 @@ button:hover {
     padding-left: 14px;
   }
   .overview-grid > div > div > span {
-    font-size: 8px;
+    font-size: 10px;
   }
   .overview-grid strong {
     font-size: 21px;
@@ -2707,11 +2707,11 @@ button:hover {
     font-size: 26px;
   }
   .empty-state .eyebrow {
-    font-size: 6px;
+    font-size: 8px;
     letter-spacing: 1px;
   }
   .empty-state > p {
-    font-size: 10px;
+    font-size: 12px;
     max-width: 270px;
   }
   .empty-art {
@@ -2733,7 +2733,7 @@ button:hover {
     margin-top: 20px;
   }
   .workspace-foot {
-    font-size: 7px;
+    font-size: 9px;
     padding: 16px 0 24px;
   }
   .messages {
@@ -2741,10 +2741,10 @@ button:hover {
     padding: 0 15px;
   }
   .message-head > strong {
-    font-size: 11px;
+    font-size: 13px;
   }
   .markdown {
-    font-size: 11px;
+    font-size: 13px;
   }
   .file-item b {
     max-width: unset;
@@ -2758,19 +2758,19 @@ button:hover {
     padding: 20px;
   }
   .dropzone span {
-    font-size: 9px;
+    font-size: 11px;
   }
   .dropzone strong {
-    font-size: 11px;
+    font-size: 13px;
   }
   .file-item {
     padding: 11px 3px;
   }
   .file-item b {
-    font-size: 11px;
+    font-size: 13px;
   }
   .inspector .goal-input {
-    font-size: 11px;
+    font-size: 13px;
   }
   .inspector-title > h3 {
     font-size: 15px;
@@ -2789,16 +2789,16 @@ button:hover {
     font-size: 12px;
   }
   .thinking-setting {
-    font-size: 11px;
+    font-size: 13px;
   }
   .team-item p {
-    font-size: 8px;
+    font-size: 10px;
   }
   .team-item b {
-    font-size: 11px;
+    font-size: 13px;
   }
   .team-note {
-    font-size: 9px;
+    font-size: 11px;
   }
   .topbar {
     padding: 0 18px;
@@ -2807,7 +2807,7 @@ button:hover {
     gap: 8px;
   }
   .breadcrumb {
-    font-size: 10px;
+    font-size: 12px;
     gap: 9px;
   }
   .modal-backdrop {
@@ -2835,13 +2835,13 @@ button:hover {
     align-items: flex-start;
   }
   .library-page .page-heading > button {
-    font-size: 10px;
+    font-size: 12px;
     padding: 9px 11px;
     min-height: 35px;
     margin-top: 17px;
   }
   .library-page .page-heading .eyebrow {
-    font-size: 6px;
+    font-size: 8px;
     letter-spacing: 0.7px;
   }
   .library-page .page-heading h1 {
@@ -2849,7 +2849,7 @@ button:hover {
     gap: 7px;
   }
   .library-page .pill {
-    font-size: 8px;
+    font-size: 10px;
     padding: 2px 5px;
   }
   .search-field {
@@ -2868,16 +2868,16 @@ button:hover {
   }
   .row-name {
     gap: 8px;
-    font-size: 10px;
+    font-size: 12px;
   }
   .demo-banner {
-    font-size: 9px;
+    font-size: 11px;
   }
   .demo-banner > button {
-    font-size: 9px;
+    font-size: 11px;
   }
   .error-banner {
-    font-size: 10px;
+    font-size: 12px;
   }
   .message-filter {
     gap: 3px;
@@ -2886,7 +2886,7 @@ button:hover {
     margin-left: 0;
   }
   .message-filter > button {
-    font-size: 8px;
+    font-size: 10px;
   }
   .toolbar-right {
     display: none;
@@ -2898,7 +2898,7 @@ button:hover {
     padding-left: 12px;
     padding-right: 12px;
     gap: 10px;
-    font-size: 10px;
+    font-size: 12px;
   }
   .source-code > div > span {
     width: 28px;
@@ -2916,7 +2916,7 @@ button:hover {
     padding: 28px 25px;
   }
   .wizard-progress {
-    font-size: 9px;
+    font-size: 11px;
   }
   .onboarding > aside {
     padding: 23px 25px;
@@ -2939,10 +2939,10 @@ button:hover {
   }
   .agent-form input,
   .agent-form select {
-    font-size: 10px;
+    font-size: 12px;
   }
   .onboarding .brand-cn {
-    font-size: 11px;
+    font-size: 13px;
   }
   .onboarding .brand-word {
     font-size: 31px;
@@ -2955,5 +2955,37 @@ button:hover {
     animation: none !important;
     scroll-behavior: auto !important;
     transition: none !important;
+  }
+}
+
+/* Keep flexible items inside the viewport on narrow screens. */
+.team-item {
+  min-width: 0;
+}
+.dropzone span {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.8;
+}
+.sidebar .brand-word {
+  font-size: 32px;
+}
+@media (max-width: 800px) {
+  .sidebar .brand-word {
+    display: none;
+  }
+  .sidebar nav small {
+    display: none;
+  }
+}
+@media (max-width: 650px) {
+  .team-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .inspector {
+    min-width: 0;
+  }
+  .goal-input {
+    font-size: 13px;
   }
 }
