@@ -1,0 +1,11 @@
+.git
+.env
+**/node_modules
+**/dist
+**/__pycache__
+**/*.pyc
+**/*.sqlite3*
+test-results
+.venv
+.agents
+.codex

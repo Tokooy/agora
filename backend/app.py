@@ -20,6 +20,7 @@ from bs4 import BeautifulSoup
 from docx import Document
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.responses import Response, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from openpyxl import load_workbook
 from pydantic import BaseModel, Field
 from pypdf import PdfReader
@@ -503,5 +504,12 @@ def export(sid: str):
         label = "最终报告" if m["kind"] == "summary" else f"第 {m['round']} 轮"
         parts.append(f"## {label} · {m['agent_name']}\n\n{m['content']}\n\n> 发言状态：{m['status']}")
     return Response("\n\n".join(parts), media_type="text/markdown; charset=utf-8", headers={"Content-Disposition": f'attachment; filename="agora-{sid[:8]}.md"'})
+
+
+# Frontend source stays independent; the production image supplies its build.
+# Register this after /api so API routes keep their own handlers and status codes.
+FRONTEND_DIST = Path(os.getenv("FRONTEND_DIST", "/app/static"))
+if FRONTEND_DIST.is_dir():
+    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
 
 

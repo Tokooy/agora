@@ -2,6 +2,7 @@ import asyncio
 import io
 import json
 import os
+import re
 import tempfile
 import time
 import unittest
@@ -200,6 +201,24 @@ class ProviderTests(unittest.IsolatedAsyncioTestCase):
         with patch.object(module.httpx, "AsyncClient", lambda **kw: real_client(transport=transport)):
             with self.assertRaisesRegex(RuntimeError, "中断"):
                 await module.stream_completion(module.DEFAULT_AGENTS[0], "fake", [], False, ignore)
+
+
+@unittest.skipUnless(module.FRONTEND_DIST.is_dir(), "Production frontend build is not present")
+class ProductionHostingTests(unittest.TestCase):
+    def test_single_container_serves_page_assets_and_api(self):
+        with TestClient(module.app) as client:
+            page = client.get("/")
+            self.assertEqual(page.status_code, 200)
+            self.assertIn("text/html", page.headers["content-type"])
+            self.assertIn("共识 Agora", page.text)
+            asset_paths = re.findall(r'(?:src|href)="(/assets/[^"]+)"', page.text)
+            self.assertGreaterEqual(len(asset_paths), 2)
+            for asset_path in asset_paths:
+                asset = client.get(asset_path)
+                self.assertEqual(asset.status_code, 200)
+                self.assertNotIn("text/html", asset.headers["content-type"])
+            self.assertEqual(client.get("/api/health").json(), {"ok": True})
+            self.assertEqual(client.get("/api/not-a-real-endpoint").status_code, 404)
 
 
 if __name__ == "__main__":
