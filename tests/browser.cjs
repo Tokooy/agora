@@ -15,6 +15,7 @@ fs.mkdirSync(output, { recursive: true });
   page.on('pageerror', e => errors.push(e.message));
   let testKeys = {shared:false, agents:{}};
   let savedAgents = null;
+  let recentSession = {id:'recent-fixture', title:'待删除的研讨', status:'completed', created:0, rounds:1, tokens:0};
   let finalSession;
   try {
     // Keep test credentials in browser-route mocks, never in the real server.
@@ -25,6 +26,7 @@ fs.mkdirSync(output, { recursive: true });
         ...data,
         keys:testKeys,
         agents:savedAgents,
+        sessions:recentSession ? [recentSession, ...data.sessions] : data.sessions,
       }});
     });
     await page.route('**/api/settings', async route => {
@@ -76,6 +78,18 @@ fs.mkdirSync(output, { recursive: true });
     await keyPanel.getByRole('button',{name:'保存 API Key',exact:true}).click();
     await keyPanel.waitFor({state:'hidden'});
     console.log('PASS: reopening enters the workspace, and roles and keys are edited separately');
+
+    await page.route('**/api/sessions/recent-fixture', async route => {
+      assert.equal(route.request().method(), 'DELETE');
+      recentSession = null;
+      await route.fulfill({json:{ok:true}});
+    });
+    const deleteRecent = page.getByRole('button',{name:'删除「待删除的研讨」',exact:true});
+    page.once('dialog', dialog => dialog.accept());
+    await deleteRecent.click();
+    await deleteRecent.waitFor({state:'hidden'});
+    assert.equal(recentSession, null);
+    console.log('PASS: deleting from recent discussions updates the sidebar');
 
     const uploadResult = page.waitForResponse(r=>r.url().endsWith('/api/documents')&&r.request().method()==='POST');
     await page.locator('input[type=file]').setInputFiles({name:'browser-check.html',mimeType:'text/html',buffer:Buffer.from('<h1>浏览器测试报告</h1><p>用户从100增至120</p><script>window.__injected=true</script>')});

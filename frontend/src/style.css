@@ -447,7 +447,15 @@ button:hover {
   line-height: 1.9;
   padding: 8px 12px;
 }
-.recent-list > button {
+.recent-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
+.recent-open {
+  flex: 1;
+  min-width: 0;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -457,13 +465,13 @@ button:hover {
   color: #4b515b;
   font-size: 13px;
 }
-.recent-list > button > span:last-child {
+.recent-open > span:last-child {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
-.recent-list > button:hover,
-.recent-list > button.selected {
+.recent-open:hover,
+.recent-open.selected {
   background: #ebecee;
   color: #24272d;
 }

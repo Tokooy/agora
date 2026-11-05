@@ -1126,16 +1126,24 @@ function App() {
               <div className="recent-list">
                 {sessions.length ? (
                   sessions.slice(0, 8).map((s) => (
-                    <button
-                      className={session?.id === s.id ? "selected" : ""}
-                      key={s.id}
-                      onClick={() => openSession(s.id)}
-                    >
-                      <span
-                        className={`tiny-dot ${s.status === "running" ? "live" : ""}`}
-                      />
-                      <span>{s.title}</span>
-                    </button>
+                    <div className="recent-row" key={s.id}>
+                      <button
+                        className={`recent-open${session?.id === s.id ? " selected" : ""}`}
+                        onClick={() => openSession(s.id)}
+                      >
+                        <span
+                          className={`tiny-dot ${s.status === "running" ? "live" : ""}`}
+                        />
+                        <span>{s.title}</span>
+                      </button>
+                      <IconButton
+                        title={`删除「${s.title}」`}
+                        disabled={!terminal(s.status)}
+                        onClick={() => removeSession(s)}
+                      >
+                        <Trash2 size={14} />
+                      </IconButton>
+                    </div>
                   ))
                 ) : (
                   <p>
