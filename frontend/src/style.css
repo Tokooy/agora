@@ -548,10 +548,11 @@ button:hover {
   padding: 2px 4px;
 }
 .workspace {
+  --topbar-height: 46px;
   min-width: 0;
 }
 .topbar {
-  height: 70px;
+  height: var(--topbar-height);
   border-bottom: 1px solid var(--line);
   display: flex;
   align-items: center;
@@ -583,12 +584,12 @@ button:hover {
 }
 .studio {
   display: flex;
-  min-height: calc(100vh - 70px);
+  min-height: calc(100vh - var(--topbar-height));
 }
 .main-content {
   flex: 1;
   min-width: 0;
-  padding: 35px 32px 0;
+  padding: 16px 32px 0;
 }
 .page-heading {
   display: flex;
@@ -618,21 +619,28 @@ button:hover {
   font-size: 10px;
   letter-spacing: 1.8px;
 }
+.main-content > .page-heading h1 {
+  margin-top: 0;
+  line-height: 1.3;
+}
+.main-content > .page-heading p {
+  margin-top: 6px;
+  line-height: 1.6;
+}
 .export-btn {
   font-size: 12px;
   min-height: 34px;
   padding: 8px 12px;
-  align-self: flex-start;
-  margin-top: 25px;
+  flex-shrink: 0;
 }
 .overview-grid {
   display: grid;
   grid-template-columns: 1.18fr 1fr 1fr;
   border: 1px solid var(--line);
   border-radius: 9px;
-  margin-top: 25px;
+  margin-top: 14px;
   background: #fff;
-  padding: 18px 0;
+  padding: 10px 0;
 }
 .overview-grid > div {
   display: flex;
@@ -661,7 +669,7 @@ button:hover {
 .overview-grid > div > div:not(.avatar-stack) {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 4px;
 }
 .overview-grid > div > div > span {
   font-size: 11px;
@@ -701,13 +709,13 @@ button:hover {
 .discussion-card {
   border: 1px solid var(--line);
   border-radius: 10px;
-  margin-top: 24px;
+  margin-top: 14px;
   min-height: 515px;
   overflow: hidden;
   box-shadow: 0 3px 10px #25262802;
 }
 .discussion-toolbar {
-  height: 54px;
+  height: 46px;
   display: flex;
   align-items: stretch;
   justify-content: space-between;
@@ -767,12 +775,12 @@ button:hover {
   animation: pulse 1.5s infinite;
 }
 .empty-state {
-  min-height: 485px;
+  min-height: 400px;
   display: flex;
   align-items: center;
   flex-direction: column;
   justify-content: center;
-  padding: 25px 18px 20px;
+  padding: 18px 18px 16px;
   text-align: center;
   position: relative;
   background:
@@ -781,9 +789,9 @@ button:hover {
 }
 .empty-art {
   width: 240px;
-  height: 75px;
+  height: 65px;
   position: relative;
-  margin: 10px 0 27px;
+  margin: 5px 0 15px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -791,7 +799,7 @@ button:hover {
 }
 .empty-line {
   position: absolute;
-  top: 42px;
+  top: 36px;
   left: 20px;
   right: 20px;
   border-top: 1px dashed #d7d8da;
@@ -847,20 +855,20 @@ button:hover {
 }
 .empty-state h2 {
   font-size: 27px;
-  line-height: 1.7;
+  line-height: 1.5;
   font-weight: 500;
   letter-spacing: 0.5px;
   color: #24272d;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 .empty-state > p {
   font-size: 12px;
-  line-height: 2.1;
+  line-height: 1.8;
   color: #626b78;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 .empty-state .primary {
-  margin-top: 22px;
+  margin-top: 16px;
   font-size: 13px;
   min-width: 170px;
   min-height: 38px;
@@ -875,6 +883,9 @@ button:hover {
   font-size: 12px;
   padding: 13px 0;
 }
+.empty-state .demo-link {
+  padding-block: 10px;
+}
 .demo-link:hover {
   color: #24272d;
 }
@@ -885,7 +896,7 @@ button:hover {
   gap: 15px;
   color: #626b78;
   font-size: 10px;
-  margin-top: 23px;
+  margin-top: 14px;
 }
 .process-strip > span {
   display: flex;
@@ -914,7 +925,7 @@ button:hover {
   gap: 15px;
   color: #626b78;
   font-size: 10px;
-  padding: 18px 0 24px;
+  padding: 9px 0 12px;
 }
 .workspace-foot > span:first-child {
   display: flex;
@@ -1258,7 +1269,7 @@ button:hover {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 13px 20px;
+  padding: 8px 20px;
   border-bottom: 1px solid #eeeff1;
   background: #fff;
   flex-wrap: wrap;
@@ -1516,7 +1527,7 @@ button:hover {
   gap: 9px;
   align-items: center;
   border-top: 1px solid #ecedef;
-  padding: 14px;
+  padding: 9px 14px;
   background: #fcfdff;
 }
 .demo-banner,
@@ -2285,7 +2296,7 @@ button:hover {
 }
 @media (min-width: 1600px) {
   .main-content {
-    padding: 43px 45px 0;
+    padding-inline: 45px;
   }
   .inspector {
     width: 330px;
@@ -2301,13 +2312,7 @@ button:hover {
     font-size: 28px;
   }
   .overview-grid {
-    padding: 22px 0;
-  }
-  .main-content > .page-heading {
-    margin-bottom: 32px;
-  }
-  .discussion-card {
-    margin-top: 28px;
+    padding: 12px 0;
   }
   .overview-grid > div {
     padding: 0 24px;
@@ -2350,7 +2355,7 @@ button:hover {
     padding: 26px 17px 18px;
   }
   .main-content {
-    padding: 30px 23px 0;
+    padding-inline: 23px;
   }
   .topbar {
     padding: 0 23px;
@@ -2610,7 +2615,7 @@ button:hover {
     width: 244px;
   }
   .main-content {
-    padding: 27px 18px 0;
+    padding: 14px 18px 0;
   }
   .page-heading h1 {
     font-size: 21px;
@@ -2695,12 +2700,6 @@ button:hover {
   .process-strip b {
     display: none;
   }
-  .topbar {
-    height: 59px;
-  }
-  .studio {
-    min-height: calc(100vh - 59px);
-  }
 }
 @media (max-width: 650px) {
   .studio {
@@ -2720,9 +2719,6 @@ button:hover {
     margin-bottom: 20px;
     padding-bottom: 20px;
   }
-  .main-content {
-    padding: 25px 18px 0;
-  }
   .page-heading h1 {
     font-size: 23px;
   }
@@ -2730,7 +2726,7 @@ button:hover {
     font-size: 12px;
   }
   .overview-grid {
-    padding: 15px 0;
+    padding: 10px 0;
   }
   .overview-grid > div {
     justify-content: flex-start;
@@ -2776,7 +2772,6 @@ button:hover {
   }
   .discussion-card {
     min-height: 475px;
-    margin-top: 20px;
   }
   .workspace-foot {
     font-size: 9px;
@@ -3004,6 +2999,56 @@ button:hover {
   }
   .onboarding .brand-word {
     font-size: 31px;
+  }
+}
+@media (min-width: 801px) and (min-height: 560px) {
+  .studio {
+    height: calc(100dvh - var(--topbar-height));
+    min-height: 0;
+  }
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .main-content > :not(.discussion-card) {
+    flex-shrink: 0;
+  }
+  .discussion-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 240px;
+    min-height: 0;
+  }
+  .discussion-toolbar,
+  .message-filter,
+  .discussion-end {
+    flex-shrink: 0;
+  }
+  .discussion-card .messages,
+  .discussion-card .empty-state {
+    flex: 1;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+  }
+  .discussion-card .empty-state {
+    justify-content: safe center;
+  }
+  .inspector {
+    overflow-y: auto;
+  }
+  .inspector > * {
+    flex-shrink: 0;
+  }
+  .inspector-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    padding-top: 8px;
+    border-top: 1px solid var(--line);
+    background: #fcfdff;
+    box-shadow: 0 22px #fcfdff;
   }
 }
 @media (prefers-reduced-motion: reduce) {

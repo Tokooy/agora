@@ -1249,9 +1249,6 @@ function App() {
                 <main className="main-content">
                   <div className="page-heading">
                     <div>
-                      <div className="eyebrow">
-                        THINK TOGETHER. THINK FURTHER.
-                      </div>
                       <h1>
                         {session ? session.title : "研讨工作台"}
                         <span className={`pill ${active ? "live" : ""}`}>

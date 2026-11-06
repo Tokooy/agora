@@ -53,6 +53,16 @@ fs.mkdirSync(output, { recursive: true });
     assert.match(await page.locator('.team-list').innerText(),/证据研究员/);
     const stored = await page.evaluate(()=>localStorage.getItem('agora-config'));
     assert.ok(!stored.includes('test-key'));
+    await page.setViewportSize({width:1280,height:720});
+    const firstScreen = await page.evaluate(() => ({
+      top: document.querySelector('.discussion-toolbar').getBoundingClientRect().top,
+      uploadBottom: document.querySelector('.empty-state .primary').getBoundingClientRect().bottom,
+      viewport: innerHeight,
+      scroll: scrollY,
+    }));
+    assert.ok(firstScreen.top < 240, JSON.stringify(firstScreen));
+    assert.ok(firstScreen.uploadBottom <= firstScreen.viewport, JSON.stringify(firstScreen));
+    assert.equal(firstScreen.scroll, 0);
     await page.screenshot({path:path.join(output,'02-workbench.png'), fullPage:true});
     console.log('PASS: first-run count, custom names, independent API entry, no secrets in browser storage');
 
@@ -169,6 +179,8 @@ fs.mkdirSync(output, { recursive: true });
     await page.locator('.message').first().waitFor();
     await page.getByText('增长 20%。',{exact:false}).first().waitFor();
     const messages = page.locator('.messages');
+    const discussionBounds = await page.locator('.discussion-card').boundingBox();
+    assert.ok(discussionBounds.y + discussionBounds.height <= 720, JSON.stringify(discussionBounds));
     await page.waitForFunction(() => {
       const list = document.querySelector('.messages');
       return list.scrollTop > 0 && list.scrollHeight - list.clientHeight - list.scrollTop < 2;
