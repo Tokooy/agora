@@ -1671,6 +1671,10 @@ button:hover {
 .modal.wide {
   width: 690px;
 }
+.modal.role-modal {
+  width: 860px;
+  max-width: 100%;
+}
 .modal > header {
   display: flex;
   justify-content: space-between;
@@ -1704,6 +1708,12 @@ button:hover {
 .modal .config-extras {
   padding: 0 28px 24px;
 }
+.role-modal > header {
+  padding-block: 18px 14px;
+}
+.modal.role-modal .config-number {
+  padding-block: 12px 10px;
+}
 .modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -1713,6 +1723,9 @@ button:hover {
   position: sticky;
   bottom: 0;
   background: #fff;
+}
+.role-modal .modal-footer {
+  padding-block: 12px;
 }
 .source-code {
   padding: 18px 0 30px;
@@ -2148,6 +2161,32 @@ button:hover {
   color: #626b78;
   resize: vertical;
   min-height: 53px;
+}
+.role-pager {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 42px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px 16px;
+}
+.role-pager > .icon-btn {
+  width: 100%;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+}
+.role-pager .agent-form {
+  padding: 16px;
+  min-width: 0;
+}
+.role-pager .agent-form-top {
+  margin-bottom: 12px;
+}
+.role-pager textarea {
+  height: clamp(180px, 32vh, 310px);
+  padding: 12px;
+  font-size: 14px;
+  color: #24272d;
 }
 .key-field {
   position: relative;
@@ -2834,6 +2873,18 @@ button:hover {
   }
   .modal-footer {
     padding: 16px 20px;
+  }
+  .role-pager {
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    gap: 6px;
+    padding: 0 10px 14px;
+  }
+  .role-pager > .icon-btn {
+    height: 36px;
+    border-radius: 9px;
+  }
+  .role-pager .agent-form {
+    padding: 12px;
   }
   .library-page {
     padding: 25px 17px;

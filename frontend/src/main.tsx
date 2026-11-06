@@ -11,6 +11,7 @@ import {
   Settings2,
   MessageSquare,
   Clock3,
+  ChevronLeft,
   ChevronRight,
   ChevronDown,
   Check,
@@ -201,12 +202,14 @@ function Modal({
   onClose,
   children,
   wide = false,
+  className = "",
 }: {
   title: string;
   subtitle?: string;
   onClose: () => void;
   children: React.ReactNode;
   wide?: boolean;
+  className?: string;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -249,7 +252,7 @@ function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`modal ${wide ? "wide" : ""}`}
+        className={`modal ${wide ? "wide" : ""} ${className}`}
       >
         <header>
           <div>
@@ -289,7 +292,8 @@ function App() {
     [keyInputs, setKeyInputs] = useState<Record<string, string>>({}),
     [sharedInput, setSharedInput] = useState(""),
     [showKeys, setShowKeys] = useState(false),
-    [setupAgents, setSetupAgents] = useState<Agent[]>([]);
+    [setupAgents, setSetupAgents] = useState<Agent[]>([]),
+    [roleCardIndex, setRoleCardIndex] = useState(0);
   const [toast, setToast] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false),
@@ -307,7 +311,8 @@ function App() {
     sessionRef = useRef<Session | null>(null);
   const active =
     !!session && !terminal(session.status) && session.id !== "demo";
-  const editRoles = onboard || configPanel === "roles";
+  const pagedRoles = configPanel === "roles";
+  const editRoles = onboard || pagedRoles;
   const editKeys = onboard || configPanel === "keys";
   useEffect(() => {
     sessionRef.current = session;
@@ -556,10 +561,16 @@ function App() {
   }
   function openConfig(panel: "roles" | "keys") {
     setSetupAgents(agents.map((a) => ({ ...a })));
+    setRoleCardIndex(0);
     setConfigPanel(panel);
   }
   function resizeAgents(n: number) {
     setCount(n);
+    if (pagedRoles) {
+      setRoleCardIndex((index) =>
+        n > setupAgents.length ? n - 1 : Math.min(index, n - 1),
+      );
+    }
     setSetupAgents((current) =>
       Array.from(
         { length: n },
@@ -583,19 +594,22 @@ function App() {
     );
   }
   async function saveConfig() {
-    if (
-      editRoles &&
-      !setupAgents.every((a) => a.name.trim() && a.prompt.trim())
-    ) {
-      notify("请填写每位 Agent 的名称和职责");
-      return;
-    }
-    if (
-      editRoles &&
-      new Set(setupAgents.map((a) => a.name.trim())).size !== setupAgents.length
-    ) {
-      notify("请为每位 Agent 使用不同名称，方便区分发言");
-      return;
+    if (editRoles) {
+      const incomplete = setupAgents.findIndex(
+        (a) => !a.name.trim() || !a.prompt.trim(),
+      );
+      if (incomplete !== -1) {
+        if (pagedRoles) setRoleCardIndex(incomplete);
+        notify(`请填写第 ${incomplete + 1} 位 Agent 的名称和职责`);
+        return;
+      }
+      const names = setupAgents.map((a) => a.name.trim());
+      const duplicate = names.findIndex((name, i) => names.indexOf(name) !== i);
+      if (duplicate !== -1) {
+        if (pagedRoles) setRoleCardIndex(duplicate);
+        notify("请为每位 Agent 使用不同名称，方便区分发言");
+        return;
+      }
     }
     if (
       onboard &&
@@ -789,93 +803,118 @@ function App() {
           </div>
         </div>
       )}
-      <div className="agent-forms">
-        {setupAgents.map((a, i) => (
-          <div className="agent-form" key={a.id}>
-            <div className="agent-form-top">
-              <Avatar agent={a} />
-              <span>
-                {editRoles ? `AGENT ${String(i + 1).padStart(2, "0")}` : a.name}
-              </span>
+      <div className={pagedRoles ? "role-pager" : "agent-forms"}>
+        {pagedRoles && (
+          <IconButton
+            title="上一个 Agent"
+            disabled={roleCardIndex === 0}
+            onClick={() => setRoleCardIndex((index) => index - 1)}
+          >
+            <ChevronLeft size={20} />
+          </IconButton>
+        )}
+        {setupAgents.map((a, i) => {
+          if (pagedRoles && i !== roleCardIndex) return null;
+          return (
+            <div className="agent-form" key={a.id}>
+              <div className="agent-form-top">
+                <Avatar agent={a} />
+                <span>
+                  {pagedRoles
+                    ? `Agent ${i + 1} / ${setupAgents.length}`
+                    : editRoles
+                      ? `AGENT ${String(i + 1).padStart(2, "0")}`
+                      : a.name}
+                </span>
+                {editKeys && (
+                  <button
+                    type="button"
+                    className="text-btn"
+                    disabled={testing !== null}
+                    onClick={() => testAgent(a)}
+                  >
+                    {testing === a.id ? (
+                      <Loader2 className="spin" size={13} />
+                    ) : (
+                      <span className="status-dot" />
+                    )}
+                    测试连接
+                  </button>
+                )}
+              </div>
+              {editRoles && (
+                <div className="form-row">
+                  <label>
+                    Agent 名称
+                    <input
+                      aria-label={`Agent ${i + 1} 名称`}
+                      value={a.name}
+                      maxLength={30}
+                      onChange={(e) => updateAgent(i, { name: e.target.value })}
+                      placeholder="由你命名"
+                    />
+                  </label>
+                  <label>
+                    模型
+                    <select
+                      value={a.model}
+                      onChange={(e) => updateAgent(i, { model: e.target.value })}
+                    >
+                      <option value="deepseek-flash">DeepSeek Flash</option>
+                      <option value="deepseek-v4-pro">DeepSeek V4 Pro</option>
+                    </select>
+                  </label>
+                </div>
+              )}
               {editKeys && (
-                <button
-                  type="button"
-                  className="text-btn"
-                  disabled={testing !== null}
-                  onClick={() => testAgent(a)}
-                >
-                  {testing === a.id ? (
-                    <Loader2 className="spin" size={13} />
-                  ) : (
-                    <span className="status-dot" />
-                  )}
-                  测试连接
-                </button>
+                <label>
+                  对应 API Key
+                  <div className="key-field">
+                    <KeyRound size={15} />
+                    <input
+                      aria-label={`Agent ${i + 1} API Key`}
+                      autoComplete="off"
+                      spellCheck={false}
+                      type={showKeys ? "text" : "password"}
+                      value={keyInputs[a.id] || ""}
+                      onChange={(e) =>
+                        setKeyInputs((k) => ({ ...k, [a.id]: e.target.value }))
+                      }
+                      placeholder={
+                        keys.agents[a.id]
+                          ? "已配置 · 留空保持"
+                          : keys.shared
+                            ? "已使用共用 Key · 可填入独立 Key"
+                            : "sk-…"
+                      }
+                    />
+                  </div>
+                </label>
+              )}
+              {editRoles && (
+                <label>
+                  角色与职责
+                  <textarea
+                    aria-label={`Agent ${i + 1} 角色与职责`}
+                    rows={pagedRoles ? 10 : 2}
+                    value={a.prompt}
+                    maxLength={3000}
+                    onChange={(e) => updateAgent(i, { prompt: e.target.value })}
+                  />
+                </label>
               )}
             </div>
-            {editRoles && (
-              <div className="form-row">
-                <label>
-                  Agent 名称
-                  <input
-                    aria-label={`Agent ${i + 1} 名称`}
-                    value={a.name}
-                    maxLength={30}
-                    onChange={(e) => updateAgent(i, { name: e.target.value })}
-                    placeholder="由你命名"
-                  />
-                </label>
-                <label>
-                  模型
-                  <select
-                    value={a.model}
-                    onChange={(e) => updateAgent(i, { model: e.target.value })}
-                  >
-                    <option value="deepseek-flash">DeepSeek Flash</option>
-                    <option value="deepseek-v4-pro">DeepSeek V4 Pro</option>
-                  </select>
-                </label>
-              </div>
-            )}
-            {editKeys && (
-              <label>
-                对应 API Key
-                <div className="key-field">
-                  <KeyRound size={15} />
-                  <input
-                    aria-label={`Agent ${i + 1} API Key`}
-                    autoComplete="off"
-                    spellCheck={false}
-                    type={showKeys ? "text" : "password"}
-                    value={keyInputs[a.id] || ""}
-                    onChange={(e) =>
-                      setKeyInputs((k) => ({ ...k, [a.id]: e.target.value }))
-                    }
-                    placeholder={
-                      keys.agents[a.id]
-                        ? "已配置 · 留空保持"
-                        : keys.shared
-                          ? "已使用共用 Key · 可填入独立 Key"
-                          : "sk-…"
-                    }
-                  />
-                </div>
-              </label>
-            )}
-            {editRoles && (
-              <label>
-                角色与职责
-                <textarea
-                  aria-label={`Agent ${i + 1} 角色与职责`}
-                  rows={2}
-                  value={a.prompt}
-                  maxLength={3000}
-                  onChange={(e) => updateAgent(i, { prompt: e.target.value })}
-                />
-              </label>
-            )}
-          </div>
-        ))}
+          );
+        })}
+        {pagedRoles && (
+          <IconButton
+            title="下一个 Agent"
+            disabled={roleCardIndex >= setupAgents.length - 1}
+            onClick={() => setRoleCardIndex((index) => index + 1)}
+          >
+            <ChevronRight size={20} />
+          </IconButton>
+        )}
       </div>
       {editKeys && (
         <div className="config-extras">
@@ -1995,12 +2034,13 @@ function App() {
       )}
       {configPanel && (
         <Modal
-          title={configPanel === "roles" ? "Agent 角色设置" : "API Key 设置"}
-          subtitle={configPanel === "roles"
-            ? "角色设定保存后用于新研讨。"
+          title={pagedRoles ? "Agent 角色设置" : "API Key 设置"}
+          subtitle={pagedRoles
+            ? "用左右按钮切换 Agent，保存后应用到新研讨。"
             : "为 Agent 设置独立 Key，也可以使用共用 Key。留空保留原配置。"}
           onClose={closeConfig}
           wide
+          className={pagedRoles ? "role-modal" : ""}
         >
           {active ? (
             <div className="setup-note">
@@ -2027,7 +2067,7 @@ function App() {
                   ) : (
                     <Check size={15} />
                   )}
-                  {configPanel === "roles" ? "保存角色" : "保存 API Key"}
+                  {pagedRoles ? "保存角色" : "保存 API Key"}
                 </button>
               </footer>
             </>
