@@ -30,7 +30,7 @@ DATA = Path(os.getenv("DATA_DIR", "/data"))
 DATA.mkdir(parents=True, exist_ok=True)
 DB_PATH = DATA / "agora.sqlite3"
 SETTINGS_PATH = DATA / "settings.sqlite3"
-MAX_FILE_BYTES = 20 * 1024 * 1024
+MAX_FILE_BYTES = 100 * 1024 * 1024
 MAX_CHARS = 120_000
 TERMINAL = {"completed", "stopped", "failed", "interrupted"}
 API_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com").rstrip("/")
@@ -331,7 +331,7 @@ async def upload(file: UploadFile = File(...)):
     data = await file.read(MAX_FILE_BYTES + 1)
     await file.close()
     if len(data) > MAX_FILE_BYTES:
-        raise HTTPException(413, "单个文件不能超过 20 MB")
+        raise HTTPException(413, "单个文件不能超过 100 MB")
     name = Path((file.filename or "document.txt").replace("\\", "/")).name[:200]
     try:
         content = await asyncio.to_thread(extract_text, name, data)
